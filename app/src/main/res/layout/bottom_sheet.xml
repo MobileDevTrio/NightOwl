@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomSheetLayout"
+    android:layout_width="match_parent"
+    android:layout_height="320dp"
+    android:background="@color/bottomSheetBackground"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="320dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+
+    <LinearLayout
+        android:id="@+id/tabsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:background="@color/tabsBackground"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:id="@+id/tabNearYou"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/tabSelected"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tabNearYouTextView"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="@string/near_you"/>
+
+
+            <View
+                android:id="@+id/tabNearYouSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/tabSelectedSecondary"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabFavorites"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/tabUnselected"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tabFavoritesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="@string/favorites"/>
+
+
+            <View
+                android:id="@+id/tabFavoritesSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/tabUnselectedSecondary"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabTop"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/tabUnselected"
+            android:layout_weight="1">
+
+
+            <TextView
+                android:id="@+id/tabTopTextView"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="@string/top_nightlife"/>
+
+
+            <View
+                android:id="@+id/tabTopSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@color/tabUnselectedSecondary"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
