@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:id="@+id/cardView"
+    >
+
+
+    <RelativeLayout
+        android:id="@+id/parentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="99dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@color/cardBackground">
+
+
+        <TextView
+            android:id="@+id/venueName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/venueName"
+            android:text="Venue Title"/>
+
+        <TextView
+            android:id="@+id/venueRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/venueName"
+            android:textSize="15sp"
+            android:text="Venue Rating"/>
+
+        <TextView
+            android:id="@+id/venueType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueRating"
+            android:textSize="15sp"
+            android:text="Type"/>
+
+        <TextView
+            android:id="@+id/venueSpacer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueRating"
+            android:layout_toEndOf="@+id/venueType"
+            android:layout_toRightOf="@+id/venueType"
+            android:textSize="10sp"
+            android:text="  *  "/>
+
+        <TextView
+            android:id="@+id/venueAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueRating"
+            android:layout_toEndOf="@+id/venueSpacer"
+            android:layout_toRightOf="@+id/venueSpacer"
+            android:textSize="15sp"
+            android:text="1892 Street Address"/>
+
+        <TextView
+            android:id="@+id/venueDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueType"
+            android:textSize="15sp"
+            android:text="Description Description Description"/>
+
+        <TextView
+            android:id="@+id/venueOpenClosed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueDescription"
+            android:textSize="15sp"
+            android:text="Open"/>
+
+        <TextView
+            android:id="@+id/venueSpacer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueDescription"
+            android:layout_toEndOf="@+id/venueOpenClosed"
+            android:layout_toRightOf="@+id/venueOpenClosed"
+            android:textSize="10sp"
+            android:text="  *  "/>
+
+        <TextView
+            android:id="@+id/venueClosingTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/venueDescription"
+            android:layout_toEndOf="@+id/venueSpacer2"
+            android:layout_toRightOf="@+id/venueSpacer2"
+            android:textSize="15sp"
+            android:text="Closes 3 AM"/>
+
+
+
+        <View
+            android:id="@+id/venuePicture"
+            android:layout_width="60dp"
+            android:layout_height="90dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@color/colorAccent"/>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/cardDivider"
+        android:layout_alignParentBottom="true"/>
+
+
+</android.support.v7.widget.CardView>
