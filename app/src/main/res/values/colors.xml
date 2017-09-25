@@ -3,4 +3,18 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="bottomSheetBackground">#00a1ed</color>
+    <color name="tabsBackground">#0185c1</color>
+
+    <color name="tabSelected">#ffffff</color>
+    <color name="tabSelectedSecondary">#0185c1</color>
+    <color name="tabUnselected">#E9E9E9</color>
+    <color name="tabUnselectedSecondary">#5B5C5E</color>
+
+    <color name="cardBackground">#ffffff</color>
+    <color name="cardDivider">#BEBEBE</color>
+    <color name="venueName">#0B0B0B</color>
+
+
 </resources>
