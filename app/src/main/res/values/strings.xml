@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">NightOwl</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="near_you">Near You</string>
+    <string name="favorites">Favorites</string>
+    <string name="top_nightlife">Top Nightlife</string>
+
+
 </resources>
