@@ -2,9 +2,21 @@
     <string name="app_name">NightOwl</string>
     <string name="title_activity_maps">Map</string>
 
+
     <string name="near_you">Near You</string>
     <string name="favorites">Favorites</string>
     <string name="top_nightlife">Top Nightlife</string>
+
+
+    <string name="venue_title">Venue Title</string>
+    <string name="venue_rating">Venue Rating</string>
+    <string name="venue_type">Venue Type</string>
+    <string name="venue_address">1892 Street Address</string>
+    <string name="venue_description">Description Description Description</string>
+    <string name="venue_open">Open</string>
+    <string name="venue_closed">Closed</string>
+    <string name="venue_closing_time">Closes 3 AM</string>
+    <string name="spacer_circle">●</string>
 
 
 </resources>
