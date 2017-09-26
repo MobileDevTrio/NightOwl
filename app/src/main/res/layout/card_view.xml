@@ -25,79 +25,108 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textColor="@color/venueName"
-            android:text="Venue Title"/>
+            android:text="@string/venue_title"/>
 
-        <TextView
-            android:id="@+id/venueRating"
+        <LinearLayout
+            android:id="@+id/firstRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/venueName"
-            android:textSize="15sp"
-            android:text="Venue Rating"/>
+            android:layout_below="@id/venueName">
 
-        <TextView
-            android:id="@+id/venueType"
+            <TextView
+                android:id="@+id/venueRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_rating"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/secondRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/venueRating"
-            android:textSize="15sp"
-            android:text="Type"/>
+            android:layout_below="@id/firstRow">
 
-        <TextView
-            android:id="@+id/venueSpacer"
+            <TextView
+                android:id="@+id/venueType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_type"/>
+
+            <TextView
+                android:id="@+id/venueSpacer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="12sp"
+                android:text="@string/spacer_circle"/>
+
+            <TextView
+                android:id="@+id/venueAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_address"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/thirdRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/venueRating"
-            android:layout_toEndOf="@+id/venueType"
-            android:layout_toRightOf="@+id/venueType"
-            android:textSize="10sp"
-            android:text="  *  "/>
+            android:layout_below="@id/secondRow">
 
-        <TextView
-            android:id="@+id/venueAddress"
+            <TextView
+                android:id="@+id/venueDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_description"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/fourthRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/venueRating"
-            android:layout_toEndOf="@+id/venueSpacer"
-            android:layout_toRightOf="@+id/venueSpacer"
-            android:textSize="15sp"
-            android:text="1892 Street Address"/>
+            android:layout_below="@id/thirdRow">
 
-        <TextView
-            android:id="@+id/venueDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/venueType"
-            android:textSize="15sp"
-            android:text="Description Description Description"/>
+            <TextView
+                android:id="@+id/venueOpenClosed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_open"/>
 
-        <TextView
-            android:id="@+id/venueOpenClosed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/venueDescription"
-            android:textSize="15sp"
-            android:text="Open"/>
+            <TextView
+                android:id="@+id/venueSpacer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="12sp"
+                android:text="@string/spacer_circle"/>
 
-        <TextView
-            android:id="@+id/venueSpacer2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/venueDescription"
-            android:layout_toEndOf="@+id/venueOpenClosed"
-            android:layout_toRightOf="@+id/venueOpenClosed"
-            android:textSize="10sp"
-            android:text="  *  "/>
+            <TextView
+                android:id="@+id/venueClosingTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/venue_closing_time"/>
 
-        <TextView
-            android:id="@+id/venueClosingTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/venueDescription"
-            android:layout_toEndOf="@+id/venueSpacer2"
-            android:layout_toRightOf="@+id/venueSpacer2"
-            android:textSize="15sp"
-            android:text="Closes 3 AM"/>
+        </LinearLayout>
+
 
 
 
