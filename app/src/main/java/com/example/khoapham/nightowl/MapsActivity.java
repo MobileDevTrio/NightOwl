@@ -4,6 +4,9 @@ package com.example.khoapham.nightowl;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,6 +19,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
 
+    private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
+    private TextView tabNearYouTV, tabFavoritesTV, tabTopTV;
+    private View tabNearYouSec, tabFavoritesSec, tabTopSec;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,8 +31,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+        // initializes all variables
+        initialize();
+    }
 
     /**
      * Manipulates the map once available.
@@ -45,4 +54,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+
+
+    /**
+     *
+     */
+    private void initialize() {
+        // Variables
+
+        tabNearYouLayout = findViewById(R.id.tabNearYou);
+        tabFavoritesLayout = findViewById(R.id.tabFavorites);
+        tabTopLayout = findViewById(R.id.tabTop);
+
+        tabNearYouTV = findViewById(R.id.tabNearYouTextView);
+        tabFavoritesTV = findViewById(R.id.tabFavoritesTextView);
+        tabTopTV = findViewById(R.id.tabTopTextView);
+
+        tabNearYouSec = findViewById(R.id.tabNearYouSecondary);
+        tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
+        tabTopSec = findViewById(R.id.tabTopSecondary);
+
+
+        // Methods & Listeners
+
+        tabNearYouListener();
+        tabFavoritesListener();
+        tabTopListener();
+    }
+
+
+
+    private void tabNearYouListener() {
+        tabNearYouLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // set new selected colors
+                tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
+                tabNearYouSec.setBackgroundColor(getResources().getColor(R.color.tabSelectedSecondary));
+
+                // set other tab colors to unselected
+                tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+            }
+        });
+    }
+
+
+    private void tabFavoritesListener() {
+        tabFavoritesLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // set new selected colors
+                tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
+                tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabSelectedSecondary));
+
+                // set other tab colors to unselected
+                tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabNearYouSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+            }
+        });
+    }
+
+    private void tabTopListener() {
+        tabTopLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // set new selected colors
+                tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
+                tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabSelectedSecondary));
+
+                // set other tab colors to unselected
+                tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabNearYouSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
+                tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+            }
+        });
+    }
+
+
+
+
+
 }
