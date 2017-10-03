@@ -100,5 +100,21 @@
 
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_below="@+id/tabsLayout">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+    <include layout="@layout/card_view"
+        android:visibility="visible" />
+
+
+
+
+
 
 </RelativeLayout>
