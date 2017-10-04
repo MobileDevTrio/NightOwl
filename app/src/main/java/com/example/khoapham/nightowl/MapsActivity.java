@@ -4,6 +4,8 @@ package com.example.khoapham.nightowl;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +17,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -22,6 +27,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private TextView tabNearYouTV, tabFavoritesTV, tabTopTV;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
+
+    // Venue listItem
+    private List<Venue> venueList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     /**
-     *
+     * initializes all variables and methods
      */
     private void initialize() {
         // Variables
@@ -74,13 +82,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
         tabTopSec = findViewById(R.id.tabTopSecondary);
 
+        venueList = new ArrayList<>();
 
         // Methods & Listeners
 
         tabNearYouListener();
         tabFavoritesListener();
         tabTopListener();
+
+        initializeListData();
+        createRecyclerList();
     }
+
+    /**
+     * adds data to venueList
+     */
+    private void initializeListData() {
+        for(int i = 0; i < 5; i++) {
+            Venue v = new Venue("Hangovers", 5, "Bar", "123 Piedmont Dr.", "Very nice place.", 3, 7);
+
+            venueList.add(v);
+        }
+    }
+
+    /**
+     * creates RecyclerView
+     */
+    private void createRecyclerList() {
+        RecyclerView rv = (RecyclerView)findViewById(R.id.recyclerView);
+
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        rv.setLayoutManager(llm);
+
+        MyAdapter adapter = new MyAdapter(venueList, this);
+        rv.setAdapter(adapter);
+
+    }
+
 
 
 
