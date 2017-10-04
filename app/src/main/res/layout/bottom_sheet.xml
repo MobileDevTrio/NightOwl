@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="320dp"
     android:background="@color/bottomSheetBackground"
-    app:behavior_hideable="false"
+    app:behavior_hideable="true"
     app:behavior_peekHeight="320dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
@@ -97,22 +97,26 @@
 
         </LinearLayout>
 
-
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_below="@+id/tabsLayout">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tabsLayout"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
 
-    </android.support.v7.widget.RecyclerView>
+        </android.support.v7.widget.RecyclerView>
 
-    <include layout="@layout/card_view"
-        android:visibility="visible" />
+        <include layout="@layout/card_view"
+            android:visibility="visible" />
 
-
+    </RelativeLayout>
 
 
 
