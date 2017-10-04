@@ -39,6 +39,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.venueName.setText(venueList.get(i).getName());
         holder.venueType.setText(venueList.get(i).getType());
         holder.venueAddress.setText(venueList.get(i).getAddress());
+        holder.venueDescription.setText(venueList.get(i).getDescription());
     }
 
     @Override
@@ -51,6 +52,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         TextView venueName;
         TextView venueType;
         TextView venueAddress;
+        TextView venueDescription;
         List<Venue> venueList1 = new ArrayList<>();
         Context context;
 
@@ -59,17 +61,18 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             this.venueList1 = venueList1;
             this.context = context;
             itemView.setOnClickListener(this);
-            cv = (CardView) itemView.findViewById(R.id.cardView);
-            venueName = (TextView) itemView.findViewById(R.id.venueName);
-            venueType = (TextView) itemView.findViewById(R.id.venueType);
-            venueAddress = (TextView) itemView.findViewById(R.id.venueAddress);
+            cv = itemView.findViewById(R.id.cardView);
+            venueName = itemView.findViewById(R.id.venueName);
+            venueType = itemView.findViewById(R.id.venueType);
+            venueAddress = itemView.findViewById(R.id.venueAddress);
+            venueDescription = itemView.findViewById(R.id.venueDescription);
         }
 
 
         @Override
         public void onClick(View v) {
             Venue venue = this.venueList1.get(getAdapterPosition());
-            //((MainActivity) context).cardViewClicked(parameter...);
+            ((MapsActivity) context).cardViewClicked(venue.getName());
         }
     }
 

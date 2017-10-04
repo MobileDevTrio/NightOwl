@@ -121,6 +121,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * TODO: change parameter to a better identifier than venue name.
+     * @param venueName name of clicked venue.
+     */
+    public void cardViewClicked(String venueName) {
+
+    }
+
 
 
 
