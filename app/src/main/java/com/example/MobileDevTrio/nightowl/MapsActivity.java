@@ -1,19 +1,16 @@
 package com.example.MobileDevTrio.nightowl;
 
-// illya balakin was here... 
 
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,13 +21,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
-    // Access Points to Google Places Database
-    private GeoDataClient mGeoDataClient;
-    private PlaceDetectionClient mPlaceDetectionClient;
 
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private TextView tabNearYouTV, tabFavoritesTV, tabTopTV;
@@ -39,14 +34,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Venue listItem
     private List<Venue> venueList;
 
+
+
+
+    ImageView filterImage;
+
+
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        mGeoDataClient = Places.getGeoDataClient(this, null);
-        mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -54,8 +56,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // initializes all variables
         initialize();
-    }
 
+
+        View bottomsheet = findViewById(R.id.bottomSheetLayout);
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet);
+    }
 
     /**
      * Manipulates the map once available.
@@ -95,6 +100,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
         tabTopSec = findViewById(R.id.tabTopSecondary);
 
+        filterImage = findViewById(R.id.filterImage);
+
         venueList = new ArrayList<>();
 
         // Methods & Listeners
@@ -102,6 +109,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabNearYouListener();
         tabFavoritesListener();
         tabTopListener();
+        bottomSheetListener();
+        filterButtonListener();
 
         initializeListData();
         createRecyclerList();
@@ -143,6 +152,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * BottomSheet Listener
+     */
+    private void bottomSheetListener() {
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if(newState == STATE_EXPANDED) {
+                    filterImage.setVisibility(View.VISIBLE);
+                    filterImage.setScaleX(1);
+                    filterImage.setScaleY(1);
+                }
+                else {
+                    filterImage.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+                if((slideOffset + 1) >= 0.5) {
+                    filterImage.setVisibility(View.VISIBLE);
+                    filterImage.setScaleX(2 * (slideOffset + 1) - 1);
+                    filterImage.setScaleY(2 * (slideOffset + 1) - 1);
+                } else if((slideOffset + 1) < 0.5) {
+                    filterImage.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+    }
+
+
+    private void filterButtonListener() {
+
+    }
 
 
     private void tabNearYouListener() {
