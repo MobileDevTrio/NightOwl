@@ -1,4 +1,4 @@
-package com.example.khoapham.nightowl;
+package com.example.MobileDevTrio.nightowl;
 
 import org.junit.Test;
 
