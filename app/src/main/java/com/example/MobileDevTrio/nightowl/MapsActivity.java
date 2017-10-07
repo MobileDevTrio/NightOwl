@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -36,6 +38,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected GeoDataClient mGeoDataClient;
     protected PlaceDetectionClient mPlaceDetectionClient;
 
+    protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private TextView tabNearYouTV, tabFavoritesTV, tabTopTV;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
@@ -43,7 +46,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Venue listItem
     private List<Venue> venueList;
 
-    ImageView filterImage;
+    // Filter Image Buttons
+    boolean filterBtnIsPressed;
+    ImageView filterImageBtn;
+    ImageView filterRestaurantsBtn;
+    ImageView filterClubBtn;
+    ImageView filterBarBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +68,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // initializes all variables
         initialize();
-
-
-        View bottomsheet = findViewById(R.id.bottomSheetLayout);
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet);
     }
 
     /**
@@ -83,6 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
     }
 
 
@@ -91,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void initialize() {
         // Variables
-
+        mapLayout = findViewById(R.id.mapLayout);
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
         tabTopLayout = findViewById(R.id.tabTop);
@@ -104,7 +109,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
         tabTopSec = findViewById(R.id.tabTopSecondary);
 
-        filterImage = findViewById(R.id.filterImage);
+        filterImageBtn = findViewById(R.id.filterImage);
+        filterRestaurantsBtn = findViewById(R.id.filterRestaurants);
+        filterClubBtn = findViewById(R.id.filterClub);
+        filterBarBtn = findViewById(R.id.filterBars);
+        filterBtnIsPressed = false;
 
         venueList = new ArrayList<>();
 
@@ -115,9 +124,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabTopListener();
         bottomSheetListener();
         filterButtonListener();
+        filterRestaurantsBtnListener();
+        filterBarBtnListener();
+        filterClubBtnListener();
 
         initializeListData();
         createRecyclerList();
+
+        darkenMap(0);
     }
 
     /**
@@ -135,7 +149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * creates RecyclerView
      */
     private void createRecyclerList() {
-        RecyclerView rv = (RecyclerView)findViewById(R.id.recyclerView);
+        RecyclerView rv = findViewById(R.id.recyclerView);
 
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -162,38 +176,109 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void bottomSheetListener() {
         BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
 
+        bottomSheetBehavior.setState(STATE_EXPANDED);
+
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if(newState == STATE_EXPANDED) {
-                    filterImage.setVisibility(View.VISIBLE);
-                    filterImage.setScaleX(1);
-                    filterImage.setScaleY(1);
-                }
-                else {
-                    filterImage.setVisibility(View.INVISIBLE);
+                    filterImageBtn.setVisibility(View.VISIBLE);
+                    filterImageBtn.setScaleX(1);
+                    filterImageBtn.setScaleY(1);
+
+
+                    filterRestaurantsBtn.setTranslationX(1);
+                    filterBarBtn.setTranslationX(1);
+                    filterClubBtn.setTranslationX(1);
+
+                } else if(newState == STATE_COLLAPSED) {
+                    filterBtnIsPressed = false;
                 }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if((slideOffset) >= 0.75) {
+                    // FILTER BUTTON VISIBILITY & SCALE
+                    filterImageBtn.setVisibility(View.VISIBLE);
+                    filterImageBtn.setScaleX(4 * (slideOffset) - 3);
+                    filterImageBtn.setScaleY(4 * (slideOffset) - 3);
 
-                if((slideOffset + 1) >= 0.5) {
-                    filterImage.setVisibility(View.VISIBLE);
-                    filterImage.setScaleX(2 * (slideOffset + 1) - 1);
-                    filterImage.setScaleY(2 * (slideOffset + 1) - 1);
-                } else if((slideOffset + 1) < 0.5) {
-                    filterImage.setVisibility(View.INVISIBLE);
+                    // FILTER OPTION VISIBILITY & TRANSLATION
+                    if(filterBtnIsPressed) {
+                        showFilterButtons();
+
+                        filterRestaurantsBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
+                        filterBarBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
+                        filterClubBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
+
+                        // Darken Map
+                        darkenMap((int)(400 * (slideOffset + 1) - 700));
+                    }
+                } else if((slideOffset) < 0.75) {
+                    filterImageBtn.setVisibility(View.INVISIBLE);
+
+                    // FILTER OPTION VISIBILITY
+                    if(filterBtnIsPressed) {
+                        hideFilterButtons();
+                    }
+                } else {
+                    filterImageBtn.setVisibility(View.VISIBLE);
+
+                    // FILTER OPTION VISIBILITY
+                    if(filterBtnIsPressed) {
+                        showFilterButtons();
+                    }
                 }
             }
         });
     }
 
 
+    /**
+     *
+     */
     private void filterButtonListener() {
+        filterImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!filterBtnIsPressed) {
+                    filterBtnIsPressed = true;
+                    showFilterButtons();
+                    darkenMap(100);
+                } else {
+                    filterBtnIsPressed = false;
+                    hideFilterButtons();
+                    darkenMap(0);
+                }
+            }
+        });
+    }
+
+    private void showFilterButtons() {
+        filterRestaurantsBtn.setVisibility(View.VISIBLE);
+        filterClubBtn.setVisibility(View.VISIBLE);
+        filterBarBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void hideFilterButtons() {
+        filterRestaurantsBtn.setVisibility(View.INVISIBLE);
+        filterClubBtn.setVisibility(View.INVISIBLE);
+        filterBarBtn.setVisibility(View.INVISIBLE);
+    }
+
+    private void filterRestaurantsBtnListener() {
 
     }
 
+    private void filterBarBtnListener() {
+
+    }
+
+    private void filterClubBtnListener() {
+
+    }
 
     private void tabNearYouListener() {
         tabNearYouLayout.setOnClickListener(new View.OnClickListener() {
@@ -251,7 +336,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
+    /**
+     * Darkens the map
+     * @param value >= 0, <=255
+     */
+    private void darkenMap(int value) {
+        if(value > 255) {
+            mapLayout.getForeground().setAlpha(255);
+        }
+        else if(value < 0) {
+            mapLayout.getForeground().setAlpha(0);
+        }
+        else {
+            mapLayout.getForeground().setAlpha(value);
+        }
+    }
 
 
 
