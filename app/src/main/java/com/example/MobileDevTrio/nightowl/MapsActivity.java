@@ -198,7 +198,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -229,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -304,6 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * TODO: change parameter to a better identifier than venue name.
+     *
      * @param venueName name of clicked venue.
      */
     public void cardViewClicked(String venueName) {
@@ -323,13 +324,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == STATE_EXPANDED) {
-                    filterImage.setVisibility(View.VISIBLE);
-                    filterImage.setScaleX(1);
-                    filterImage.setScaleY(1);
-                }
-                else {
-                    filterImage.setVisibility(View.INVISIBLE);
-                if(newState == STATE_EXPANDED) {
                     filterImageBtn.setVisibility(View.VISIBLE);
                     filterImageBtn.setScaleX(1);
                     filterImageBtn.setScaleY(1);
@@ -339,27 +333,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     filterBarBtn.setTranslationX(1);
                     filterClubBtn.setTranslationX(1);
 
-                } else if(newState == STATE_COLLAPSED) {
+                } else if (newState == STATE_COLLAPSED) {
                     filterBtnIsPressed = false;
                 }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                if((slideOffset) >= 0.75) {
+                if ((slideOffset) >= 0.75) {
                     // FILTER BUTTON VISIBILITY & SCALE
                     filterImageBtn.setVisibility(View.VISIBLE);
                     filterImageBtn.setScaleX(4 * (slideOffset) - 3);
                     filterImageBtn.setScaleY(4 * (slideOffset) - 3);
 
-                if ((slideOffset + 1) >= 0.5) {
-                    filterImage.setVisibility(View.VISIBLE);
-                    filterImage.setScaleX(2 * (slideOffset + 1) - 1);
-                    filterImage.setScaleY(2 * (slideOffset + 1) - 1);
-                } else if ((slideOffset + 1) < 0.5) {
-                    filterImage.setVisibility(View.INVISIBLE);
                     // FILTER OPTION VISIBILITY & TRANSLATION
-                    if(filterBtnIsPressed) {
+                    if (filterBtnIsPressed) {
                         showFilterButtons();
 
                         filterRestaurantsBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
@@ -367,20 +355,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         filterClubBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
 
                         // Darken Map
-                        darkenMap((int)(400 * (slideOffset + 1) - 700));
+                        darkenMap((int) (400 * (slideOffset + 1) - 700));
                     }
-                } else if((slideOffset) < 0.75) {
+                } else if ((slideOffset) < 0.75) {
                     filterImageBtn.setVisibility(View.INVISIBLE);
 
                     // FILTER OPTION VISIBILITY
-                    if(filterBtnIsPressed) {
+                    if (filterBtnIsPressed) {
                         hideFilterButtons();
                     }
                 } else {
                     filterImageBtn.setVisibility(View.VISIBLE);
 
                     // FILTER OPTION VISIBILITY
-                    if(filterBtnIsPressed) {
+                    if (filterBtnIsPressed) {
                         showFilterButtons();
                     }
                 }
@@ -397,7 +385,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
 
-                if(!filterBtnIsPressed) {
+                if (!filterBtnIsPressed) {
                     filterBtnIsPressed = true;
                     showFilterButtons();
                     darkenMap(100);
@@ -491,20 +479,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Darkens the map
+     *
      * @param value >= 0, <=255
      */
     private void darkenMap(int value) {
-        if(value > 255) {
+        if (value > 255) {
             mapLayout.getForeground().setAlpha(255);
-        }
-        else if(value < 0) {
+        } else if (value < 0) {
             mapLayout.getForeground().setAlpha(0);
-        }
-        else {
+        } else {
             mapLayout.getForeground().setAlpha(value);
         }
     }
-
 
 
 }
