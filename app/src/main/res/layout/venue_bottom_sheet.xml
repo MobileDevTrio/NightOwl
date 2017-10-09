@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/selectedVenueBottomSheetLayout"
+    android:layout_width="match_parent"
+    android:layout_height="320dp"
+    android:background="@color/venueBottomSheetBackground"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <LinearLayout
+        android:id="@+id/venueTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp"
+        android:paddingRight="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/venueBottomSheetTitleBar"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="3"
+            android:background="@color/colorAccent">
+
+            <TextView
+                android:id="@+id/svName"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:textSize="20sp"
+                android:textColor="@color/venueName"
+                android:text="@string/venue_title"/>
+
+            <TextView
+                android:id="@+id/svRating"
+                android:layout_width="wrap_content"
+                android:layout_height="21dp"
+                android:textSize="15sp"
+                android:text="@string/venue_rating"/>
+
+            <TextView
+                android:id="@+id/svType"
+                android:layout_width="wrap_content"
+                android:layout_height="21dp"
+                android:textSize="15sp"
+                android:text="@string/venue_type"/>
+
+        </LinearLayout>
+
+
+        <View
+            android:id="@+id/uberIconBottomSheet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/cardBackground">
+
+        </View>
+
+        <View
+            android:id="@+id/callIconBottomSheet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/cardDivider">
+
+        </View>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/svDetailsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_below="@+id/venueTitleBar"
+        android:background="@color/venueBottomSheetBackground">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp">
+
+            <LinearLayout
+                android:id="@+id/svDescriptionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <TextView
+                    android:id="@+id/svDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="@string/sample_description"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/svAddressLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/colorAccent">
+
+                </View>
+
+                <TextView
+                    android:id="@+id/svAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="@string/venue_address"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/svOpenClosedLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/colorAccent">
+
+                </View>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/svOpenClosed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:text="@string/venue_open"/>
+
+                    <TextView
+                        android:id="@+id/svSpacer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:textSize="10sp"
+                        android:text="@string/spacer_circle"/>
+
+                    <TextView
+                        android:id="@+id/svClosingTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:text="@string/venue_closing_time"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/svPhoneLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/colorAccent">
+
+                </View>
+
+                <TextView
+                    android:id="@+id/svPhoneNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="@string/venue_phone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/svURLLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <View
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/colorAccent">
+
+                </View>
+
+                <TextView
+                    android:id="@+id/svURL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="@string/venue_URL"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+
+</RelativeLayout>

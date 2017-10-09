@@ -16,5 +16,8 @@
     <color name="cardDivider">#BEBEBE</color>
     <color name="venueName">#0B0B0B</color>
 
+    <color name="venueBottomSheetBackground">#ffffff</color>
+    <color name="venueBottomSheetTitleBar">#00a1ed</color>
+
 
 </resources>

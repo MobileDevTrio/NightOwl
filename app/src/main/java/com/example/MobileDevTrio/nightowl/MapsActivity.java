@@ -74,12 +74,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Venue listItem
     private List<Venue> venueList;
 
+    // BottomSheet Behavior
+    BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
+
     // Filter Image Buttons
     boolean filterBtnIsPressed;
-    ImageView filterImageBtn;
-    ImageView filterRestaurantsBtn;
-    ImageView filterClubBtn;
-    ImageView filterBarBtn;
+    protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
+
+    // SelectedVenueBottomSheet Views
+    protected ImageView goBackBtn;
+    protected TextView  svNameTV, svRatingTV, svTypeTV, svDescriptionTV, svAddressTV, svOpenClosedTV,
+                        svPhoneNumTV, svURLTV;
+
 
 
     @Override
@@ -240,6 +246,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initialize() {
         // Variables
         mapLayout = findViewById(R.id.mapLayout);
+
+        venueList = new ArrayList<>();
+
+        bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
+        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedVenueBottomSheetLayout));
+
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
         tabTopLayout = findViewById(R.id.tabTop);
@@ -258,17 +270,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBarBtn = findViewById(R.id.filterBars);
         filterBtnIsPressed = false;
 
-        venueList = new ArrayList<>();
+        goBackBtn = findViewById(R.id.goBackImage);
+        svNameTV = findViewById(R.id.svName);
+        svRatingTV = findViewById(R.id.svRating);
+        svTypeTV = findViewById(R.id.svType);
+        svDescriptionTV = findViewById(R.id.svDescription);
+        svAddressTV = findViewById(R.id.svAddress);
+        svOpenClosedTV = findViewById(R.id.svOpenClosed);
+        svPhoneNumTV = findViewById(R.id.svPhoneNumber);
+        svURLTV = findViewById(R.id.svURL);
+
 
         // Methods & Listeners
         tabNearYouListener();
         tabFavoritesListener();
         tabTopListener();
         bottomSheetListener();
+        bottomSheetListener2();
         filterButtonListener();
         filterRestaurantsBtnListener();
         filterBarBtnListener();
         filterClubBtnListener();
+
+        goBackBtnListener();
 
         initializeListData();
         createRecyclerList();
@@ -288,6 +312,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
+     * TODO: set all venue details...
+     * loads selected venue data onto selectedVenueBottomSheet
+     * @param sv user-selected venue
+     */
+    private void setSelectedVenueBottomSheetData(Venue sv) {
+        svNameTV.setText(sv.getName());
+        svRatingTV.setText(Double.toString(sv.getRating()));
+        svTypeTV.setText(sv.getType());
+        svAddressTV.setText(sv.getAddress());
+        svDescriptionTV.setText(sv.getDescription());
+    }
+
+    /**
      * creates RecyclerView
      */
     private void createRecyclerList() {
@@ -303,24 +340,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * TODO: change parameter to a better identifier than venue name.
-     *
-     * @param venueName name of clicked venue.
+     * @param selectedVenue user-selected venue
      */
-    public void cardViewClicked(String venueName) {
+    public void cardViewClicked(Venue selectedVenue) {
+        setSelectedVenueBottomSheetData(selectedVenue);
 
+        bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses venue List BottomSheet
+
+        bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Venue BottomSheet
     }
+
+    private void goBackBtnListener() {
+        goBackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Venue BottomSheet
+
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+            }
+        });
+    }
+
+
 
 
     /**
      * BottomSheet Listener
      */
     private void bottomSheetListener() {
-        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
+        bottomSheetBehavior1.setState(STATE_EXPANDED);
 
-        bottomSheetBehavior.setState(STATE_EXPANDED);
-
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == STATE_EXPANDED) {
@@ -377,6 +427,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
+    /**
+     * BottomSheet Listener 2 - SELECTED VENUE BOTTOM SHEET
+     */
+    private void bottomSheetListener2() {
+        bottomSheetBehavior2.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if(newState == STATE_EXPANDED) {
+                    goBackBtn.setVisibility(View.VISIBLE);
+                    goBackBtn.setScaleX(1);
+                    goBackBtn.setScaleY(1);
+
+                } else if(newState == STATE_COLLAPSED) {
+                    //filterBtnIsPressed = false;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if((slideOffset) >= 0.75) {
+                    // FILTER BUTTON VISIBILITY & SCALE
+                    goBackBtn.setVisibility(View.VISIBLE);
+                    goBackBtn.setScaleX(4 * (slideOffset) - 3);
+                    goBackBtn.setScaleY(4 * (slideOffset) - 3);
+
+                } else if((slideOffset) < 0.75) {
+                    goBackBtn.setVisibility(View.INVISIBLE);
+
+                } else {
+                    goBackBtn.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+    }
+
+
     /**
      *
      */
@@ -426,6 +514,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabNearYouLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // expand BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
 
                 // set new selected colors
                 tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -445,6 +535,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabFavoritesLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // expand BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+
                 // set new selected colors
                 tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
                 tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabSelectedSecondary));
@@ -463,6 +556,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabTopLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // expand BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+
                 // set new selected colors
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
                 tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabSelectedSecondary));
