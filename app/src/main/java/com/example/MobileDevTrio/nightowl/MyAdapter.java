@@ -72,7 +72,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         @Override
         public void onClick(View v) {
             Venue venue = this.venueList1.get(getAdapterPosition());
-            ((MapsActivity) context).cardViewClicked(venue.getName());
+            ((MapsActivity) context).cardViewClicked(venue);
         }
     }
 
