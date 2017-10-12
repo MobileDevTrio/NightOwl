@@ -14,7 +14,6 @@
         android:foreground="@drawable/map_darken"
         >
 
-
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
@@ -24,7 +23,6 @@
         </fragment>
 
     </FrameLayout>
-
 
 
     <android.support.design.widget.CoordinatorLayout
@@ -123,15 +121,11 @@
                 android:layout_marginRight="10dp"
                 android:visibility="invisible"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_filter" />
-
-
-
+                android:src="@drawable/ic_back" />
 
         </RelativeLayout>
 
     </android.support.design.widget.CoordinatorLayout>
-
 
 
 </RelativeLayout>

@@ -16,7 +16,6 @@
         android:layout_height="45dp"
         android:orientation="horizontal"
         android:weightSum="3"
-        android:background="@color/tabsBackground"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -33,6 +32,7 @@
                 android:layout_height="40dp"
                 android:gravity="center"
                 android:textSize="20sp"
+                android:textColor="@color/tabName"
                 android:text="@string/near_you"/>
 
 
@@ -59,6 +59,7 @@
                 android:layout_height="40dp"
                 android:gravity="center"
                 android:textSize="20sp"
+                android:textColor="@color/tabName"
                 android:text="@string/favorites"/>
 
 
@@ -86,6 +87,7 @@
                 android:layout_height="40dp"
                 android:gravity="center"
                 android:textSize="20sp"
+                android:textColor="@color/tabName"
                 android:text="@string/top_nightlife"/>
 
 
