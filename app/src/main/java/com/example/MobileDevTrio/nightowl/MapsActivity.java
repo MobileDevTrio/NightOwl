@@ -125,6 +125,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getNearbyPlacesData.execute(dataTransfer);
             }
         });
+        
+        //Bar filter button functionality
+        filterBarBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                mMap.clear();
+                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "bar");
+                Object dataTransfer[] = new Object[2];
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                getNearbyPlacesData.execute(dataTransfer);
+            }
+        });
+
+        //Nightclub filter button functionality
+        filterClubBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                mMap.clear();
+                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "night_club");
+                Object dataTransfer[] = new Object[2];
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
+
+                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                getNearbyPlacesData.execute(dataTransfer);
+            }
+        });
     }
 
     /**
