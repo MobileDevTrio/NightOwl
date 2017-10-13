@@ -4,20 +4,24 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="bottomSheetBackground">#00a1ed</color>
-    <color name="tabsBackground">#0185c1</color>
+    <color name="bottomSheetBackground">#232323</color>
 
-    <color name="tabSelected">#ffffff</color>
+    <!-- TAB COLORS -->
+    <color name="tabName">#dddddd</color>
+    <color name="tabSelected">#1e1e1e</color>
     <color name="tabSelectedSecondary">#0185c1</color>
-    <color name="tabUnselected">#E9E9E9</color>
-    <color name="tabUnselectedSecondary">#5B5C5E</color>
+    <color name="tabUnselected">#262626</color>
+    <color name="tabUnselectedSecondary">#191919</color>
 
-    <color name="cardBackground">#ffffff</color>
-    <color name="cardDivider">#BEBEBE</color>
-    <color name="venueName">#0B0B0B</color>
+    <!-- CARD COLORS -->
+    <color name="cardBackground">#282828</color>
+    <color name="cardDivider">#444444</color>
+    <color name="venueName">#dddddd</color>
+    <color name="venueDetails">#cccccc</color>
 
-    <color name="venueBottomSheetBackground">#ffffff</color>
-    <color name="venueBottomSheetTitleBar">#00a1ed</color>
+    <!-- SELECTED VENUE COLORS -->
+    <color name="venueBottomSheetBackground">#282828</color>
+    <color name="venueBottomSheetTitleBar">#16668c</color>
 
 
 </resources>

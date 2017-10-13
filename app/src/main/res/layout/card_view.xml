@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="110dp"
-    android:id="@+id/cardView"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/cardBackground"
+    android:id="@+id/cardView">
 
 
     <RelativeLayout
@@ -15,8 +15,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:background="@color/cardBackground">
+        android:layout_marginLeft="10dp">
 
 
         <TextView
@@ -38,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_rating"/>
 
         </LinearLayout>
@@ -54,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_type"/>
 
             <TextView
@@ -65,7 +66,8 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
-                android:textSize="12sp"
+                android:textSize="5sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/spacer_circle"/>
 
             <TextView
@@ -73,6 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_address"/>
 
         </LinearLayout>
@@ -88,6 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_description"/>
 
         </LinearLayout>
@@ -104,6 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_open"/>
 
             <TextView
@@ -115,7 +120,8 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
-                android:textSize="12sp"
+                android:textSize="5sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/spacer_circle"/>
 
             <TextView
@@ -123,6 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:textColor="@color/venueDetails"
                 android:text="@string/venue_closing_time"/>
 
         </LinearLayout>
@@ -146,7 +153,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/cardDivider"
-        android:layout_alignParentBottom="true"/>
+        android:layout_gravity="bottom"
+        />
 
 
 </android.support.v7.widget.CardView>

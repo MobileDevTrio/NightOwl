@@ -1,13 +1,18 @@
 package com.example.MobileDevTrio.nightowl;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,7 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -27,15 +32,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -70,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
-    private TextView tabNearYouTV, tabFavoritesTV, tabTopTV;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
 
     // Venue listItem
@@ -87,6 +90,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected ImageView goBackBtn;
     protected TextView  svNameTV, svRatingTV, svTypeTV, svDescriptionTV, svAddressTV, svOpenClosedTV,
                         svPhoneNumTV, svURLTV;
+
+    protected boolean appWasPaused;
 
 
 
@@ -123,6 +128,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
+     * if application was paused, when resumed, the current thread will sleep for 2 seconds
+     * and then attempt to get the device location.
+     * This is for when the user is prompted to turn on GPS, or comes back to the app in general.
+     * The reason we check if app was previously paused is because onResume gets called when app is
+     * first started (after onStart()... )
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(appWasPaused) {
+            Toast.makeText(getApplicationContext(), "onResume()", Toast.LENGTH_LONG).show();
+            /*try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+
+            } */
+
+            getDeviceLocation();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        appWasPaused = true;
+        Toast.makeText(getApplicationContext(), "onPause()", Toast.LENGTH_LONG).show();
+
+    }
+
+    /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
@@ -134,6 +169,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        // Applies style JSON to map
+        styleMap();
+
         // Prompt the user for location permission
         getLocationPermission();
 
@@ -142,6 +180,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+        //getLocation();
 
 //        mMap.addMarker(new MarkerOptions()
 //                .position(new LatLng(mDefaultLocation.latitude, mDefaultLocation.longitude))
@@ -155,6 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        .title("New markerr"));
 //            }
 //        });
+
     }
 
     /**
@@ -242,14 +282,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
     private void getDeviceLocation() {
     /*
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
      */
+
         try {
             if (mLocationPermissionGranted) {
-                Task locationResult = mFusedLocationProviderClient.getLastLocation();
+                final Task locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
@@ -257,9 +299,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // TODO: When device location is turned off, the task.getResult() returns a NULL. This causes an error when moving the camera, and causes app to crash.
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            if (mLastKnownLocation != null) {
+
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
+
+                                AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
+                                alert.setMessage("Location needs to be turned on.");
+                                alert.setPositiveButton("TURN ON", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                        MapsActivity.this.startActivity(myIntent);
+                                    }
+                                });
+
+
+                                alert.show();
+                            }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
@@ -273,6 +333,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+    /**
+     * Adds style JSON to map
+     */
+    public void styleMap() {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.map_style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+
+
+
 
     /**
      * initializes all variables and methods
@@ -289,10 +371,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
         tabTopLayout = findViewById(R.id.tabTop);
-
-        tabNearYouTV = findViewById(R.id.tabNearYouTextView);
-        tabFavoritesTV = findViewById(R.id.tabFavoritesTextView);
-        tabTopTV = findViewById(R.id.tabTopTextView);
 
         tabNearYouSec = findViewById(R.id.tabNearYouSecondary);
         tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
@@ -314,6 +392,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         svPhoneNumTV = findViewById(R.id.svPhoneNumber);
         svURLTV = findViewById(R.id.svURL);
 
+        appWasPaused = false;
+
 
         // Methods & Listeners
         tabNearYouListener();
@@ -325,13 +405,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtnListener();
         filterBarBtnListener();
         filterClubBtnListener();
-
         goBackBtnListener();
 
         initializeListData();
         createRecyclerList();
 
         darkenMap(0);
+
     }
 
     /**
@@ -474,8 +554,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     goBackBtn.setScaleX(1);
                     goBackBtn.setScaleY(1);
 
-                } else if(newState == STATE_COLLAPSED) {
-                    //filterBtnIsPressed = false;
                 }
             }
 
