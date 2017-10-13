@@ -70,6 +70,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    private static final int PROXIMITY_RADIUS = 10000;
+
     protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
@@ -101,7 +103,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGeoDataClient = Places.getGeoDataClient(this, null);
         mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        initialize();
+        filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                String url = buildUrl(mDefaultLocation.latitude, mDefaultLocation.longitude, "restaurant");
+                Object dataTransfer[] = new Object[2];
+                dataTransfer[0] = mMap;
+                dataTransfer[1] = url;
 
+                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
+                getNearbyPlacesData.execute(dataTransfer);
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -109,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         // initializes all variables
-        initialize();
+
     }
 
     /**
@@ -180,6 +195,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            }
 //        });
 
+    }
+
+    /**
+     * Builds the URL for the web request to Places database
+     * @param latitude
+     * @param longitude
+     * @param nearbyPlace
+     * @return
+     */
+    private String buildUrl(double latitude, double longitude, String nearbyPlace) {
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location=" + latitude + "," + longitude);
+        googlePlaceUrl.append("&radius=" + PROXIMITY_RADIUS);
+        googlePlaceUrl.append("&type=" + nearbyPlace);
+        googlePlaceUrl.append("&sensor=true");
+        googlePlaceUrl.append("&key=" + "AIzaSyCq7IaNXtlDSXAIbzy38H3JptuvCiak1gk");
+
+        return googlePlaceUrl.toString();
     }
 
     /**
