@@ -59,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // is not granted
     // TODO: Allow/Prompt user to set the default location
     private LatLng mDefaultLocation = new LatLng(33.9397, -84.5197);
-    private static final int DEFAULT_ZOOM = 15;
+    private static final float DEFAULT_ZOOM = 11.2f;
     private boolean mLocationPermissionGranted;
 
     // The geographical location where the device is currently located. Which is equivalent to the
@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    private static final int PROXIMITY_RADIUS = 10000;
+    private static final int PROXIMITY_RADIUS = 10000;  // ~6 mile radius
 
     protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
@@ -94,6 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected boolean appWasPaused;
 
 
+    //TODO: Make HashMap of places available in this class
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +104,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGeoDataClient = Places.getGeoDataClient(this, null);
         mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        // initializes all variables
         initialize();
         filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mMap.clear();
-                String url = buildUrl(mDefaultLocation.latitude, mDefaultLocation.longitude, "restaurant");
+                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "restaurant");
                 Object dataTransfer[] = new Object[2];
                 dataTransfer[0] = mMap;
                 dataTransfer[1] = url;
@@ -117,14 +125,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getNearbyPlacesData.execute(dataTransfer);
             }
         });
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        // initializes all variables
-
     }
 
     /**
@@ -180,21 +180,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
-        //getLocation();
-
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(mDefaultLocation.latitude, mDefaultLocation.longitude))
-//                .title("Hello world"));
-//
-//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-//            @Override
-//            public void onMapClick(LatLng latLng) {
-//                mMap.addMarker(new MarkerOptions()
-//                        .position(latLng)
-//                        .title("New markerr"));
-//            }
-//        });
-
     }
 
     /**
@@ -209,6 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googlePlaceUrl.append("location=" + latitude + "," + longitude);
         googlePlaceUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlaceUrl.append("&type=" + nearbyPlace);
+        googlePlaceUrl.append("&opennow");
         googlePlaceUrl.append("&sensor=true");
         googlePlaceUrl.append("&key=" + "AIzaSyCq7IaNXtlDSXAIbzy38H3JptuvCiak1gk");
 
@@ -352,8 +338,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAG, "Can't find style. Error: ", e);
         }
     }
-
-
 
 
     /**
