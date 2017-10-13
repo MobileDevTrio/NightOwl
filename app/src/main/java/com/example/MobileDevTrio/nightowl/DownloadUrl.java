@@ -9,32 +9,42 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by KhoaPham on 10/9/17.
+ *  Class to retrieve data from Google Places database through http connection.
+ *  The data returned is in JSON format.
  */
-
 public class DownloadUrl {
 
+    /**
+     *  This creates an http connection using the passed URL
+     * @param myUrl
+     * @return
+     * @throws IOException
+     */
     public String readUrl(String myUrl) throws IOException {
+        System.out.println(myUrl);
         String data = "";
-
         InputStream inputStream = null;
-
         HttpURLConnection urlConnection = null;
+
         try {
             URL url = new URL(myUrl);
+
+            // An http connection to communicate with url
             urlConnection = (HttpURLConnection) url.openConnection();
+
             urlConnection.connect();
 
+            // Read data from the url
             inputStream = urlConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuffer stringBuffer = new StringBuffer();
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
+                stringBuffer.append(line);
             }
 
-            data = stringBuilder.toString();
+            data = stringBuffer.toString();
             bufferedReader.close();
 
         } catch (MalformedURLException e) {
