@@ -34,6 +34,8 @@ public class DataParser {
         String vicinity = "-NA-";
         String rating = "-NA-";
         String website = "-NA-";
+        String openNow;
+
         String latitude;
         String longitude;
 
@@ -62,7 +64,9 @@ public class DataParser {
             latitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lng");
 
-
+            // We only save places that are currently open at the moment the user uses the app
+           // openNow = Boolean.toString(googlePlaceJSON.getJSONObject("opening_hours").getBoolean("open_now"));
+           // if (Boolean.parseBoolean(openNow)) {
                 googlePlacesMap.put("place_id", placeId);
                 googlePlacesMap.put("place_name", placeName);
                 googlePlacesMap.put("phone_number", phoneNumber);
@@ -71,7 +75,7 @@ public class DataParser {
                 googlePlacesMap.put("website", website);
                 googlePlacesMap.put("latitude", latitude);
                 googlePlacesMap.put("longitude", longitude);
-
+            //}
 
         } catch (JSONException e) {
             e.printStackTrace();

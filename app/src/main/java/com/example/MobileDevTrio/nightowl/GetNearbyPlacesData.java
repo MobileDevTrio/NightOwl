@@ -2,6 +2,7 @@ package com.example.MobileDevTrio.nightowl;
 
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -18,12 +19,6 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
 
     String url;                 // A url containing the web service request to Places database
                                 // we request the places that we want in this url
-
-    List<HashMap<String, String>> nearbyPlacesList;
-
-    public List<HashMap<String, String>> getNearbyPlacesList() {
-        return nearbyPlacesList;
-    }
 
     /**
      *  This requests and retrieves the the JSON data, then passes the data to onPostExecute()
@@ -56,9 +51,9 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
     @Override
     protected void onPostExecute(String s) {
 
-        nearbyPlacesList = null;
+        List<HashMap<String, String>> nearbyPlacesList = null;
         DataParser dataParser = new DataParser();
-        nearbyPlacesList = dataParser.parse(s);     // data is parsed and stored within nearbyPlacesList
+        nearbyPlacesList = dataParser.parse(s);
         showNearbyPlaces(nearbyPlacesList);
     }
 
@@ -68,27 +63,23 @@ public class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
      */
     private void showNearbyPlaces(List<HashMap<String, String>> nearbyPlacesList) {
 
-        if (nearbyPlacesList != null) {
-            for (int i = 0; i < nearbyPlacesList.size(); i++) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                HashMap<String, String> googlePlace = nearbyPlacesList.get(i);
+        for (int i = 0; i < nearbyPlacesList.size(); i++) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            HashMap<String, String> googlePlace = nearbyPlacesList.get(i);
 
-                String placeName = googlePlace.get("place_name");
-                String vicinity = googlePlace.get("vicinity");
-                double latitude = Double.parseDouble(googlePlace.get("latitude"));
-                double longitude = Double.parseDouble(googlePlace.get("longitude"));
+            String placeName = googlePlace.get("place_name");
+            String vicinity = googlePlace.get("vicinity");
+            double latitude = Double.parseDouble(googlePlace.get("latitude"));
+            double longitude = Double.parseDouble(googlePlace.get("longitude"));
 
-                LatLng latLng = new LatLng(latitude, longitude);
-                markerOptions
-                        .position(latLng)
-                        .title(placeName + " : " + vicinity);
+            LatLng latLng = new LatLng(latitude, longitude);
+            markerOptions
+                    .position(latLng)
+                    .title(placeName + " : " + vicinity);
 
-                mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions);
 
-            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         }
-
-
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
     }
 }
