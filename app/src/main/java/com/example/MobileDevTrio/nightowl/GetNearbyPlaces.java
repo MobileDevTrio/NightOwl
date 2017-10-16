@@ -1,0 +1,138 @@
+package com.example.MobileDevTrio.nightowl;
+
+import android.os.AsyncTask;
+import android.util.Pair;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
+    private final String PARAM_KEY = "key=";
+    private final String PARAM_PLACE_ID = "placeid=";
+    private final String PARAM_LOCATION = "location=";
+    private final String PARAM_RADIUS = "radius=";
+    private final String PARAM_TYPE = "type=";
+    private final String PARAM_OPENNOW = "opennow";
+    private final String PARAM_PAGETOKEN = "pagetoken=";
+    private final String PLACES_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+    private final String PLACE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json?";
+
+    private List<Place> nearbyPlacesList = new ArrayList<>();
+
+    private GoogleMap mMap;
+
+    @Override
+    protected List<Place> doInBackground(Object... objects) {
+        mMap = (GoogleMap) objects[7];
+        try {
+            // first 20 results
+            Pair<String, List<Place>> pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
+            nearbyPlacesList.addAll(pair.second);
+
+            // check for 20-40 results
+            if (pair.first != null) {
+                objects[5] = pair.first;
+                Thread.sleep(2000); // There is a short delay between when a next_page_token is issued, and when it will become valid
+                pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
+                nearbyPlacesList.addAll(pair.second);
+
+                // check for 40-60 results
+                if (pair.first != null) {
+                    objects[5] = pair.first;
+                    Thread.sleep(2000);
+                    pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
+                    nearbyPlacesList.addAll(pair.second);
+                }
+            }
+
+            // Further update place details
+            for (Place place:nearbyPlacesList) {
+                objects[6] = place.getPlaceId();
+                new PlaceParser(buildURL(objects)).parsePlace(place);
+            }
+
+            return nearbyPlacesList;
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(List<Place> places) {
+
+        //showNearbyPlaces(places);
+
+    }
+
+    public List<Place> getNearbyPlacesList() {
+        return nearbyPlacesList;
+    }
+
+    private String buildURL(Object... params) {
+        String latitude      = (String) params[0];
+        String longitude     = (String) params[1];
+        String type          = (String) params[2];
+        int radius           =    (int) params[3];
+        String key           = (String) params[4];
+        String nextPageToken = (String) params[5];
+        String placeId       = (String) params[6];
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (placeId != null) {
+            stringBuilder.append(PLACE_DETAILS_URL);
+            stringBuilder.append(PARAM_KEY).append(key);
+            stringBuilder.append("&").append(PARAM_PLACE_ID).append(placeId);
+
+            return stringBuilder.toString();
+        }
+
+        stringBuilder.append(PLACES_SEARCH_URL);
+        stringBuilder.append(PARAM_KEY).append(key);
+
+        if (nextPageToken != null) {
+            stringBuilder.append("&").append(PARAM_PAGETOKEN).append(nextPageToken);
+
+            return stringBuilder.toString();
+        }
+
+        stringBuilder.append("&").append(PARAM_LOCATION).append(latitude).append(",").append(longitude);
+        stringBuilder.append("&").append(PARAM_TYPE).append(type);
+        stringBuilder.append("&").append(PARAM_OPENNOW);
+        stringBuilder.append("&").append(PARAM_RADIUS).append(radius);
+
+        return stringBuilder.toString();
+    }
+
+    private void showNearbyPlaces(List<Place> nearbyPlacesList) {
+
+        if (nearbyPlacesList != null) {
+            for (int i = 0; i < nearbyPlacesList.size(); i++) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                Place googlePlace = nearbyPlacesList.get(i);
+
+                String placeName = googlePlace.getName();
+                String phone = googlePlace.getPhone();
+                String address = googlePlace.getAddress();
+                String website = googlePlace.getWebsite();
+
+                double latitude = googlePlace.getLatitude();
+                double longitude = googlePlace.getLongitude();
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                markerOptions
+                        .position(latLng)
+                        .title(placeName + " : " + website);
+
+                mMap.addMarker(markerOptions);
+
+            }
+        }
+    }
+}
