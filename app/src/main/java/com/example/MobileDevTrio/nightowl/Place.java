@@ -12,6 +12,8 @@ public class Place {
     private double rating;
     private String[] types;   // types of a place (ie. restaurant, bar, night_club)
 
+    private String type;
+
     // Must make a 2nd url request using placeId to get these specific data
     private String phone;
     private String website;
@@ -25,7 +27,8 @@ public class Place {
         setName(builder.name);
         setLocation(builder.location);
         setRating(builder.rating);
-        setTypes(builder.types);
+        //setTypes(builder.types);
+        setSingleType(builder.type);
     }
 
     @Override
@@ -75,6 +78,14 @@ public class Place {
         return types;
     }
 
+    public String getSingleType() {
+        return type;
+    }
+
+    public void setSingleType(String type) {
+        this.type = type;
+    }
+
     public void setTypes(String[] types) {
         this.types = types;
     }
@@ -120,6 +131,7 @@ public class Place {
         private LatLng location;
         private double rating;
         private String[] types;
+        private String type;
 
         public Builder() {
         }
@@ -146,6 +158,11 @@ public class Place {
 
         public Builder types(String[] val) {
             types = val;
+            return this;
+        }
+
+        public Builder type(String val) {
+            type = val;
             return this;
         }
 

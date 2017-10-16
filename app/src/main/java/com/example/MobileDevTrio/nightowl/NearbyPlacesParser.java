@@ -28,8 +28,11 @@ public class NearbyPlacesParser extends Parser {
     private static final String LNG = "lng";
     private static final String RATING = "rating";
 
-    public NearbyPlacesParser(String placesUrl) {
+    private PlaceType placeType;
+
+    public NearbyPlacesParser(String placesUrl, PlaceType type) {
         super(placesUrl);
+        placeType = type;
     }
 
     @Override
@@ -76,11 +79,21 @@ public class NearbyPlacesParser extends Parser {
             place.setRating(jsonPlace.getDouble(RATING));
 
         JSONArray typesArray = jsonPlace.getJSONArray(TYPES);
+        /*
         String[] types = new String[typesArray.length()];
         for (int i = 0; i < typesArray.length(); i++) {
             types[i] = typesArray.getString(i);
         }
-        place.setTypes(types);
+        place.setTypes(types); */
+
+        switch(placeType) {
+            case RESTAURANT: place.setSingleType("Restaurant");
+                break;
+            case BAR: place.setSingleType("Bar");
+                break;
+            case CLUB: place.setSingleType("Club");
+                break;
+        }
 
         return place;
     }
