@@ -48,13 +48,15 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
                 break;
         }
 
- //       try {
+        /*
+           removing this try block caused some kind of FileNotFoundError.
+         */
+        try {
             // first 20 results
             Pair<String, List<Place>> pair = new NearbyPlacesParser(buildURL(objects), placeType).parseNearbyPlaces();
             nearbyPlacesList.addAll(pair.second);
 
-
-            //Thread.sleep(2000); // TODO: remove - is here just for removal of error
+            Thread.sleep(200);
 
             /* check for 20-40 results
             if (pair.first != null) {
@@ -80,10 +82,10 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
             return nearbyPlacesList;
 
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
