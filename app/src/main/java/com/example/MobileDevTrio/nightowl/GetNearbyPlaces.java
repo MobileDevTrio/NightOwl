@@ -1,5 +1,6 @@
 package com.example.MobileDevTrio.nightowl;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Pair;
 
@@ -25,29 +26,51 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
     private GoogleMap mMap;
 
+    private Context context;
+
+    public GetNearbyPlaces(Context context) {
+        this.context = context;
+    }
+
     @Override
     protected List<Place> doInBackground(Object... objects) {
         mMap = (GoogleMap) objects[7];
-        try {
+
+        PlaceType placeType;
+        switch((String)objects[2]) {
+            case "restaurant": placeType = PlaceType.RESTAURANT;
+                break;
+            case "bar": placeType = PlaceType.BAR;
+                break;
+            case "club": placeType = PlaceType.CLUB;
+                break;
+            default: placeType =  PlaceType.RESTAURANT;
+                break;
+        }
+
+ //       try {
             // first 20 results
-            Pair<String, List<Place>> pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
+            Pair<String, List<Place>> pair = new NearbyPlacesParser(buildURL(objects), placeType).parseNearbyPlaces();
             nearbyPlacesList.addAll(pair.second);
 
-            // check for 20-40 results
+
+            //Thread.sleep(2000); // TODO: remove - is here just for removal of error
+
+            /* check for 20-40 results
             if (pair.first != null) {
                 objects[5] = pair.first;
                 Thread.sleep(2000); // There is a short delay between when a next_page_token is issued, and when it will become valid
                 pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
                 nearbyPlacesList.addAll(pair.second);
 
-                // check for 40-60 results
+                /* check for 40-60 results
                 if (pair.first != null) {
                     objects[5] = pair.first;
                     Thread.sleep(2000);
                     pair = new NearbyPlacesParser(buildURL(objects)).parseNearbyPlaces();
                     nearbyPlacesList.addAll(pair.second);
                 }
-            }
+            } */
 
             // Further update place details
             for (Place place:nearbyPlacesList) {
@@ -57,17 +80,19 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
             return nearbyPlacesList;
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     @Override
     protected void onPostExecute(List<Place> places) {
 
-        //showNearbyPlaces(places);
+        showNearbyPlaces(places);
 
+
+        ((MapsActivity) context).onPostExecute();
     }
 
     public List<Place> getNearbyPlacesList() {

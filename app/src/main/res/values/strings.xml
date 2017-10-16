@@ -8,19 +8,19 @@
     <string name="top_nightlife">Top Nightlife</string>
 
 
-    <string name="venue_title">Venue Title</string>
-    <string name="venue_rating">Venue Rating</string>
-    <string name="venue_type">Venue Type</string>
-    <string name="venue_address">1892 Street Address</string>
-    <string name="venue_phone">(404) 846-8989</string>
-    <string name="venue_description">Description Description Description</string>
-    <string name="venue_open">Open</string>
-    <string name="venue_closed">Closed</string>
-    <string name="venue_closing_time">Closes 3 AM</string>
+    <string name="place_title">Place Title</string>
+    <string name="place_rating">Place Rating</string>
+    <string name="place_type">Place Type</string>
+    <string name="place_address">1892 Street Address</string>
+    <string name="place_phone">(404) 846-8989</string>
+    <string name="place_description">Description Description Description</string>
+    <string name="place_open">Open</string>
+    <string name="place_closed">Closed</string>
+    <string name="place_closing_time">Closes 3 AM</string>
     <string name="spacer_circle">●</string>
 
     <string name="uber_here">Take an Uber!</string>
-    <string name="venue_URL">venuewebsite.com</string>
+    <string name="place_URL">placewebsite.com</string>
 
 
     <string name="sample_description">Description Description Description Description Description Description

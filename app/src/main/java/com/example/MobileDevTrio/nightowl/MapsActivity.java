@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
 
     // Venue listItem
-    private List<Venue> venueList;
+    //private List<Venue> venueList;
 
     // BottomSheet Behavior
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
@@ -86,16 +86,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean filterBtnIsPressed;
     protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
 
-    // SelectedVenueBottomSheet Views
+    // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
-    protected TextView  svNameTV, svRatingTV, svTypeTV, svDescriptionTV, svAddressTV, svOpenClosedTV,
-                        svPhoneNumTV, svURLTV;
+    protected TextView  spNameTV, spRatingTV, spTypeTV, spDescriptionTV, spAddressTV, spOpenClosedTV,
+                        spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
 
     // TODO: Determine where to initialize this nearbyPlaces
-    private List<Place> nearbyPlaces;
-    private GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+    private List<Place> placeList;
+    private GetNearbyPlaces getNearbyPlaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +118,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
                 mMap.clear();
                 Object[] urlParams = new Object[8];
                 urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
@@ -137,6 +139,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBarBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
                 mMap.clear();
                 Object[] urlParams = new Object[8];
                 urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
@@ -149,6 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 urlParams[7] = mMap;
 
                 getNearbyPlaces.execute(urlParams);
+
             }
         });
 
@@ -156,6 +161,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterClubBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
                 mMap.clear();
                 Object[] urlParams = new Object[8];
                 urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
@@ -395,13 +402,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * initializes all variables and methods
      */
     private void initialize() {
+        placeList = new ArrayList<>();
+
         // Variables
         mapLayout = findViewById(R.id.mapLayout);
 
-        venueList = new ArrayList<>();
+        //venueList = new ArrayList<>();
 
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
-        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedVenueBottomSheetLayout));
+        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
 
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
@@ -418,14 +427,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBtnIsPressed = false;
 
         goBackBtn = findViewById(R.id.goBackImage);
-        svNameTV = findViewById(R.id.svName);
-        svRatingTV = findViewById(R.id.svRating);
-        svTypeTV = findViewById(R.id.svType);
-        svDescriptionTV = findViewById(R.id.svDescription);
-        svAddressTV = findViewById(R.id.svAddress);
-        svOpenClosedTV = findViewById(R.id.svOpenClosed);
-        svPhoneNumTV = findViewById(R.id.svPhoneNumber);
-        svURLTV = findViewById(R.id.svURL);
+        spNameTV = findViewById(R.id.spName);
+        spRatingTV = findViewById(R.id.spRating);
+        spTypeTV = findViewById(R.id.spType);
+        spDescriptionTV = findViewById(R.id.spDescription);
+        spAddressTV = findViewById(R.id.spAddress);
+        spOpenClosedTV = findViewById(R.id.spOpenClosed);
+        spPhoneNumTV = findViewById(R.id.spPhoneNumber);
+        spURLTV = findViewById(R.id.spURL);
 
         appWasPaused = false;
 
@@ -442,70 +451,95 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterClubBtnListener();
         goBackBtnListener();
 
-        initializeListData();
-        createRecyclerList();
+        //initializeListData();
+        //createRecyclerList();
 
         darkenMap(0);
 
     }
 
-    /**
+    /*
+    private void movePlacesToVenueList(List<Place> placesList) {
+        venueList.clear();
+        
+        for (int i = 0; i < placesList.size(); i++) {
+            String name = placesList.get(i).getName();
+            String type = placesList.get(i).getSingleType();
+
+            Venue venue = new Venue(name, 5, type, "124 dacula rd.", "description, description", 5.0, 7.0);
+            venueList.add(venue);
+        }
+    } */
+
+    protected void onPostExecute() {
+        placeList = getNearbyPlaces.getNearbyPlacesList();
+        // movePlacesToVenueList(getNearbyPlaces.getNearbyPlacesList());
+        createRecyclerList();
+    }
+
+    /*
      * adds data to venueList
-     */
+
     private void initializeListData() {
         for (int i = 0; i < 5; i++) {
             Venue v = new Venue("Hangovers", 5, "Bar", "123 Piedmont Dr.", "Very nice place.", 3, 7);
 
             venueList.add(v);
         }
-    }
+    } */
 
     /**
-     * TODO: set all venue details...
-     * loads selected venue data onto selectedVenueBottomSheet
-     * @param sv user-selected venue
+     * TODO: set all place details...
+     * loads selected place data onto selectedPlaceBottomSheet
+     * @param sp user-selected place
      */
-    private void setSelectedVenueBottomSheetData(Venue sv) {
-        svNameTV.setText(sv.getName());
-        svRatingTV.setText(Double.toString(sv.getRating()));
-        svTypeTV.setText(sv.getType());
-        svAddressTV.setText(sv.getAddress());
-        svDescriptionTV.setText(sv.getDescription());
+    private void setSelectedPlaceBottomSheetData(Place sp) {
+        spNameTV.setText(sp.getName());
+        spRatingTV.setText(Double.toString(sp.getRating()));
+        spTypeTV.setText(sp.getSingleType());
+        spAddressTV.setText(sp.getAddress());
+        spPhoneNumTV.setText(sp.getPhone());
+        //svDescriptionTV.setText(sp.getDescription());
     }
 
     /**
      * creates RecyclerView
      */
     private void createRecyclerList() {
+        String a = "size: " + placeList.size() + "";
+
+        Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
+
+
         RecyclerView rv = findViewById(R.id.recyclerView);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(llm);
 
-        MyAdapter adapter = new MyAdapter(venueList, this);
+        MyAdapter adapter = new MyAdapter(placeList, this);
         rv.setAdapter(adapter);
 
     }
 
     /**
-     * @param selectedVenue user-selected venue
+     * @param selectedPlace user-selected place
      */
-    public void cardViewClicked(Venue selectedVenue) {
-        setSelectedVenueBottomSheetData(selectedVenue);
+    public void cardViewClicked(Place selectedPlace) {
+        setSelectedPlaceBottomSheetData(selectedPlace);
 
-        bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses venue List BottomSheet
+        bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses Place List BottomSheet
 
-        bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Venue BottomSheet
+        bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Place BottomSheet
     }
 
     private void goBackBtnListener() {
         goBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Venue BottomSheet
+                bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Place BottomSheet
 
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
             }
         });
     }
@@ -578,7 +612,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     /**
-     * BottomSheet Listener 2 - SELECTED VENUE BOTTOM SHEET
+     * BottomSheet Listener 2 - SELECTED PLACE BOTTOM SHEET
      */
     private void bottomSheetListener2() {
         bottomSheetBehavior2.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -662,7 +696,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -683,7 +717,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -704,7 +738,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));

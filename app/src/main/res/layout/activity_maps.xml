@@ -35,7 +35,7 @@
 
         <include layout="@layout/bottom_sheet" />
 
-        <include layout="@layout/venue_bottom_sheet" />
+        <include layout="@layout/place_bottom_sheet" />
 
 
         <RelativeLayout
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="100dp"
-            app:layout_anchor="@+id/selectedVenueBottomSheetLayout"
+            app:layout_anchor="@+id/selectedPlaceBottomSheetLayout"
             app:layout_anchorGravity="top|end">
 
 
