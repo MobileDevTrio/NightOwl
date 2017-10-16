@@ -88,7 +88,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
-    protected TextView  spNameTV, spRatingTV, spTypeTV, spDescriptionTV, spAddressTV, spOpenClosedTV,
+    protected TextView  spNameTV, spRatingTV, spTypeTV, /*spDescriptionTV,*/ spAddressTV, spOpenClosedTV,
                         spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
@@ -430,7 +430,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spNameTV = findViewById(R.id.spName);
         spRatingTV = findViewById(R.id.spRating);
         spTypeTV = findViewById(R.id.spType);
-        spDescriptionTV = findViewById(R.id.spDescription);
+        //spDescriptionTV = findViewById(R.id.spDescription);
         spAddressTV = findViewById(R.id.spAddress);
         spOpenClosedTV = findViewById(R.id.spOpenClosed);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
