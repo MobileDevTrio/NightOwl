@@ -57,27 +57,6 @@
                 android:textColor="@color/placeDetails"
                 android:text="@string/place_type"/>
 
-            <TextView
-                android:id="@+id/placeSpacer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="5sp"
-                android:textColor="@color/placeDetails"
-                android:text="@string/spacer_circle"/>
-
-            <TextView
-                android:id="@+id/placeAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/placeDetails"
-                android:text="@string/place_address"/>
-
         </LinearLayout>
 
         <LinearLayout
@@ -87,12 +66,12 @@
             android:layout_below="@id/secondRow">
 
             <TextView
-                android:id="@+id/placeDescription"
+                android:id="@+id/placeAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="@color/placeDetails"
-                android:text="@string/place_description"/>
+                android:text="@string/place_address"/>
 
         </LinearLayout>
 
