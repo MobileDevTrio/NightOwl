@@ -37,69 +37,6 @@
 
         <include layout="@layout/venue_bottom_sheet" />
 
-        <RelativeLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="220dp"
-            app:layout_anchor="@+id/bottomSheetLayout"
-            app:layout_anchorGravity="top|end">
-
-            <ImageView
-                android:id="@+id/filterRestaurants"
-                android:layout_width="110dp"
-                android:layout_height="30dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginEnd="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_filter_restaurants"
-                android:visibility="invisible"/>
-
-            <ImageView
-                android:id="@+id/filterBars"
-                android:layout_width="110dp"
-                android:layout_height="30dp"
-                android:layout_below="@+id/filterRestaurants"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_filter_bars"
-                android:visibility="invisible"/>
-
-            <ImageView
-                android:id="@+id/filterClub"
-                android:layout_width="110dp"
-                android:layout_height="30dp"
-                android:layout_below="@+id/filterBars"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_filter_clubs"
-                android:visibility="invisible"/>
-
-            <ImageView
-                android:id="@+id/filterImage"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_below="@+id/filterClub"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_filter" />
-
-        </RelativeLayout>
-
 
         <RelativeLayout
             android:orientation="vertical"
@@ -122,6 +59,69 @@
                 android:visibility="invisible"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_back" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="220dp"
+            app:layout_anchor="@+id/bottomSheetLayout"
+            app:layout_anchorGravity="top|end">
+
+            <ImageView
+                android:id="@+id/filterRestaurants"
+                android:layout_width="110dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_filter_restaurants"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/filterBars"
+                android:layout_width="110dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/filterRestaurants"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_filter_bars"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/filterClub"
+                android:layout_width="110dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/filterBars"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_filter_clubs"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/filterImage"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/filterClub"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_filter" />
 
         </RelativeLayout>
 
