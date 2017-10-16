@@ -33,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
@@ -40,13 +41,19 @@ import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
     private static final String TAG = MapsActivity.class.getSimpleName();
+
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PROXIMITY_RADIUS = 1600 * 4;  // 4 mile radius
+    private static final float DEFAULT_ZOOM = 11.5f;
 
     // Entry points for Google Places API
     protected GeoDataClient mGeoDataClient;
@@ -59,18 +66,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // is not granted
     // TODO: Allow/Prompt user to set the default location
     private LatLng mDefaultLocation = new LatLng(33.9397, -84.5197);
-    private static final float DEFAULT_ZOOM = 11.2f;
     private boolean mLocationPermissionGranted;
 
     // The geographical location where the device is currently located. Which is equivalent to the
     // last-known location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
-
-    // Keys for storing activity state.
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
-    private static final int PROXIMITY_RADIUS = 10000;  // ~6 mile radius
 
     protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
@@ -93,8 +93,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected boolean appWasPaused;
 
-
-    //TODO: Make HashMap of places available in this class
+    // TODO: Determine where to initialize this nearbyPlaces
+    private List<Place> nearbyPlaces;
+    private GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,17 +113,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // initializes all variables
         initialize();
+
+        // TODO: Revise logic to filter places, https://stackoverflow.com/questions/33006206/how-to-hide-show-groups-of-markers-by-category-with-google-maps-in-android?noredirect=1&lq=1
         filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "restaurant");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
+                Object[] urlParams = new Object[8];
+                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+                urlParams[2] = "restaurant";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
 
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
+                getNearbyPlaces.execute(urlParams);
             }
         });
         
@@ -131,13 +138,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view){
                 mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "bar");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
+                Object[] urlParams = new Object[8];
+                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+                urlParams[2] = "bar";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
 
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
+                getNearbyPlaces.execute(urlParams);
             }
         });
 
@@ -146,13 +157,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view){
                 mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "night_club");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
+                Object[] urlParams = new Object[8];
+                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+                urlParams[2] = "night_club";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
 
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
+                getNearbyPlaces.execute(urlParams);
             }
         });
     }
@@ -212,23 +227,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getDeviceLocation();
     }
 
-    /**
-     * Builds the URL for the web request to Places database
-     * @param latitude
-     * @param longitude
-     * @param nearbyPlace
-     * @return
-     */
-    private String buildUrl(double latitude, double longitude, String nearbyPlace) {
-        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlaceUrl.append("location=" + latitude + "," + longitude);
-        googlePlaceUrl.append("&radius=" + PROXIMITY_RADIUS);
-        googlePlaceUrl.append("&type=" + nearbyPlace);
-        googlePlaceUrl.append("&opennow");
-        googlePlaceUrl.append("&sensor=true");
-        googlePlaceUrl.append("&key=" + "AIzaSyCq7IaNXtlDSXAIbzy38H3JptuvCiak1gk");
+    private void showNearbyPlaces(List<Place> nearbyPlacesList) {
 
-        return googlePlaceUrl.toString();
+        if (nearbyPlacesList != null) {
+            for (int i = 0; i < nearbyPlacesList.size(); i++) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                Place googlePlace = nearbyPlacesList.get(i);
+
+                String placeName = googlePlace.getName();
+                String phone = googlePlace.getPhone();
+                String address = googlePlace.getAddress();
+                String website = googlePlace.getWebsite();
+
+                double latitude = googlePlace.getLatitude();
+                double longitude = googlePlace.getLongitude();
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                markerOptions
+                        .position(latLng)
+                        .title(placeName + " : " + phone);
+
+                mMap.addMarker(markerOptions);
+
+            }
+        }
     }
 
     /**
@@ -304,7 +326,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
      */
-
         try {
             if (mLocationPermissionGranted) {
                 final Task locationResult = mFusedLocationProviderClient.getLastLocation();
