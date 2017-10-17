@@ -118,14 +118,14 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    android:background="@color/colorAccent">
-
-                </View>
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_location"/>
 
                 <TextView
                     android:id="@+id/spAddress"
@@ -146,14 +146,14 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    android:background="@color/colorAccent">
-
-                </View>
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_time"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -200,14 +200,15 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    android:background="@color/colorAccent">
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_phone"/>
 
-                </View>
 
                 <TextView
                     android:id="@+id/spPhoneNumber"
@@ -228,14 +229,14 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    android:background="@color/colorAccent">
-
-                </View>
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_web"/>
 
                 <TextView
                     android:id="@+id/spURL"
