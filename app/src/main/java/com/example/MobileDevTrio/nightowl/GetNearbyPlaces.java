@@ -80,7 +80,7 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
                 }
             } */
 
-            // Further update place details
+            // Further updates place details
             for (Place place:nearbyPlacesList) {
                 objects[6] = place.getPlaceId();
                 new PlaceParser(buildURL(objects)).parsePlace(place);
