@@ -78,8 +78,7 @@ public class NearbyPlacesParser extends Parser {
         if (jsonPlace.has(RATING))
             place.setRating(jsonPlace.getDouble(RATING));
 
-        JSONArray typesArray = jsonPlace.getJSONArray(TYPES);
-        /*
+        /*JSONArray typesArray = jsonPlace.getJSONArray(TYPES);
         String[] types = new String[typesArray.length()];
         for (int i = 0; i < typesArray.length(); i++) {
             types[i] = typesArray.getString(i);

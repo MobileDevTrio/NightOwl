@@ -315,7 +315,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
                 mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
+                //mMap.getUiSettings().setZoomControlsEnabled(true);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
