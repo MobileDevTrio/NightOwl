@@ -20,4 +20,5 @@
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDLC3OennSEvvG_Xxsq80F-O1o1Ir8ctuQ</string>
     <string name="google_places_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCvnfzUOAR240_aF_lwf5O1Q_gA-SPCz8s</string>
+    <string name="google_places_web_service_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCq7IaNXtlDSXAIbzy38H3JptuvCiak1gk</string>
 </resources>

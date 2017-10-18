@@ -14,11 +14,11 @@ import java.util.List;
  */
 
 class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private List<Venue> venueList;
+    private List<Place> placeList;
     private Context context;
 
-    MyAdapter(List<Venue> venueList, Context context) {
-        this.venueList = venueList;
+    MyAdapter(List<Place> placeList, Context context) {
+        this.placeList = placeList;
         this.context = context;
     }
 
@@ -26,20 +26,21 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent, false);
-        return new MyViewHolder(rootView, context, venueList);
+        return new MyViewHolder(rootView, context, placeList);
     }
 
     @Override
     public int getItemCount() {
-        return venueList.size();
+        return placeList.size();
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int i) {
-        holder.venueName.setText(venueList.get(i).getName());
-        holder.venueType.setText(venueList.get(i).getType());
-        holder.venueAddress.setText(venueList.get(i).getAddress());
-        holder.venueDescription.setText(venueList.get(i).getDescription());
+        holder.placeName.setText(placeList.get(i).getName());
+        holder.placeType.setText(placeList.get(i).getSingleType());
+        holder.placeAddress.setText(placeList.get(i).getAddress());
+        holder.placeRating.setText(Double.toString(placeList.get(i).getRating()));
+        //holder.placeDescription.setText(placeList.get(i).getDescription());
     }
 
     @Override
@@ -49,30 +50,33 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cv;
-        TextView venueName;
-        TextView venueType;
-        TextView venueAddress;
-        TextView venueDescription;
-        List<Venue> venueList1 = new ArrayList<>();
+        TextView placeName;
+        TextView placeType;
+        TextView placeAddress;
+        TextView placeRating;
+
+        //TextView placeDescription;
+        List<Place> placeList1 = new ArrayList<>();
         Context context;
 
-        private MyViewHolder(View itemView, Context context, List<Venue> venueList1) {
+        private MyViewHolder(View itemView, Context context, List<Place> placeList1) {
             super(itemView);
-            this.venueList1 = venueList1;
+            this.placeList1 = placeList1;
             this.context = context;
             itemView.setOnClickListener(this);
             cv = itemView.findViewById(R.id.cardView);
-            venueName = itemView.findViewById(R.id.venueName);
-            venueType = itemView.findViewById(R.id.venueType);
-            venueAddress = itemView.findViewById(R.id.venueAddress);
-            venueDescription = itemView.findViewById(R.id.venueDescription);
+            placeName = itemView.findViewById(R.id.placeName);
+            placeType = itemView.findViewById(R.id.placeType);
+            placeAddress = itemView.findViewById(R.id.placeAddress);
+            placeRating = itemView.findViewById(R.id.placeRating);
+            //placeDescription = itemView.findViewById(R.id.placeDescription);
         }
 
 
         @Override
         public void onClick(View v) {
-            Venue venue = this.venueList1.get(getAdapterPosition());
-            ((MapsActivity) context).cardViewClicked(venue);
+            Place place = this.placeList1.get(getAdapterPosition());
+            ((MapsActivity) context).cardViewClicked(place);
         }
     }
 

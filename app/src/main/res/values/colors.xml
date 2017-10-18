@@ -16,12 +16,12 @@
     <!-- CARD COLORS -->
     <color name="cardBackground">#282828</color>
     <color name="cardDivider">#444444</color>
-    <color name="venueName">#dddddd</color>
-    <color name="venueDetails">#cccccc</color>
+    <color name="placeName">#dddddd</color>
+    <color name="placeDetails">#cccccc</color>
 
-    <!-- SELECTED VENUE COLORS -->
-    <color name="venueBottomSheetBackground">#282828</color>
-    <color name="venueBottomSheetTitleBar">#16668c</color>
+    <!-- SELECTED place COLORS -->
+    <color name="placeBottomSheetBackground">#282828</color>
+    <color name="placeBottomSheetTitleBar">#16668c</color>
 
 
 </resources>

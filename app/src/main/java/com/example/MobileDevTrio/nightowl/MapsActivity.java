@@ -31,8 +31,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
@@ -40,13 +43,19 @@ import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
     private static final String TAG = MapsActivity.class.getSimpleName();
+
+    // Keys for storing activity state.
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
+
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PROXIMITY_RADIUS = 1600 * 4;  // 4 mile radius
+    private static final float DEFAULT_ZOOM = 11.5f;
 
     // Entry points for Google Places API
     protected GeoDataClient mGeoDataClient;
@@ -59,25 +68,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // is not granted
     // TODO: Allow/Prompt user to set the default location
     private LatLng mDefaultLocation = new LatLng(33.9397, -84.5197);
-    private static final int DEFAULT_ZOOM = 15;
     private boolean mLocationPermissionGranted;
 
     // The geographical location where the device is currently located. Which is equivalent to the
     // last-known location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
 
-    // Keys for storing activity state.
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-
-    private static final int PROXIMITY_RADIUS = 10000;
-
     protected FrameLayout mapLayout;
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
 
     // Venue listItem
-    private List<Venue> venueList;
+    //private List<Venue> venueList;
 
     // BottomSheet Behavior
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
@@ -86,14 +88,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean filterBtnIsPressed;
     protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
 
-    // SelectedVenueBottomSheet Views
+    // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
-    protected TextView  svNameTV, svRatingTV, svTypeTV, svDescriptionTV, svAddressTV, svOpenClosedTV,
-                        svPhoneNumTV, svURLTV;
+    protected TextView  spNameTV, spRatingTV, spTypeTV, /*spDescriptionTV,*/ spAddressTV, spOpenClosedTV,
+                        spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
 
-
+    // TODO: Determine where to initialize this nearbyPlaces
+    private List<Place> placeList, restaurantList, barList, clubList;
+    private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
+    boolean restaurantListReady, barListReady, clubListReady;
+    private GetNearbyPlaces getNearbyPlaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,52 +109,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGeoDataClient = Places.getGeoDataClient(this, null);
         mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        initialize();
-
-        //Restaurant filter button functionality
-        filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "restaurant");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
-            }
-        });
-
-        //Bar filter button functionality
-        filterBarBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "bar");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
-            }
-        });
-
-        //Nightclub filter button functionality
-        filterClubBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                mMap.clear();
-                String url = buildUrl(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "night_club");
-                Object dataTransfer[] = new Object[2];
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-
-                GetNearbyPlacesData getNearbyPlacesData = new GetNearbyPlacesData();
-                getNearbyPlacesData.execute(dataTransfer);
-            }
-        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -156,6 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         // initializes all variables
+        initialize();
 
     }
 
@@ -212,39 +173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
-        //getLocation();
-
-//        mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(mDefaultLocation.latitude, mDefaultLocation.longitude))
-//                .title("Hello world"));
-//
-//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-//            @Override
-//            public void onMapClick(LatLng latLng) {
-//                mMap.addMarker(new MarkerOptions()
-//                        .position(latLng)
-//                        .title("New markerr"));
-//            }
-//        });
-
-    }
-
-    /**
-     * Builds the URL for the web request to Places database
-     * @param latitude
-     * @param longitude
-     * @param nearbyPlace
-     * @return
-     */
-    private String buildUrl(double latitude, double longitude, String nearbyPlace) {
-        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlaceUrl.append("location=" + latitude + "," + longitude);
-        googlePlaceUrl.append("&radius=" + PROXIMITY_RADIUS);
-        googlePlaceUrl.append("&type=" + nearbyPlace);
-        googlePlaceUrl.append("&sensor=true");
-        googlePlaceUrl.append("&key=" + "AIzaSyCq7IaNXtlDSXAIbzy38H3JptuvCiak1gk");
-
-        return googlePlaceUrl.toString();
     }
 
     /**
@@ -302,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
                 mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
+                //mMap.getUiSettings().setZoomControlsEnabled(true);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -320,7 +248,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
      */
-
         try {
             if (mLocationPermissionGranted) {
                 final Task locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -328,7 +255,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
-                            // TODO: When device location is turned off, the task.getResult() returns a NULL. This causes an error when moving the camera, and causes app to crash.
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
@@ -336,6 +262,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(mLastKnownLocation.getLatitude(),
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
+                                /*******************************************************************
+                                 * GET PLACES HERE
+                                 */
+
+                                startGettingPlaces();
+
+
+
                             } else {
                                 Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
 
@@ -366,6 +301,215 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**********************************************************************************************************************************************************
+     **********************************************************************************************************************************************************
+     *                                     GET NEARBY PLACES
+     */
+
+    private void startGettingPlaces() {
+        getRestaurants();
+        getBars();
+        getClubs();
+
+    }
+
+    private void getRestaurants() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Restaurant");
+
+
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "restaurant";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setRestaurantsList(List<Place> restaurantList) {
+        this.restaurantList = restaurantList;
+        restaurantListReady = true;
+    }
+
+    public void getBars() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Bars");
+
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "bar";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setBarsList(List<Place> barList) {
+        this.barList = barList;
+        barListReady = true;
+    }
+
+    public void getClubs() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
+
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "night_club";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setClubsList(List<Place> clubList) {
+        this.clubList = clubList;
+        clubListReady = true;
+    }
+
+    /**
+     * Checks if all lists are ready
+     */
+    public void checkIfReady() {
+        if(restaurantListReady && barListReady && clubListReady) {
+            setPlaces();
+        }
+    }
+
+    private void setPlaces() {
+        Log.d("NightOwl-d", "initial - setting places...");
+
+        setNearbyPlacesList();
+
+        createRecyclerList();
+
+        // Show the markers on the map
+        showNearbyPlaces(restaurantMarkers);
+        showNearbyPlaces(barMarkers);
+        showNearbyPlaces(clubMarkers);
+    }
+
+    /**
+     * Merges three types lists into one lists - placesList
+     */
+    private void setNearbyPlacesList() {
+        int addRest;
+        int addBar;
+        int addClub;
+
+        if (restaurantList.size() < 10) {
+            addRest = restaurantList.size();
+        } else {
+            addRest = 10;
+        }
+
+        ///////////////////////////////////////////////////////////////////
+
+        if (barList.size() < 10) {
+            addBar = barList.size();
+        } else {
+            addBar = 10;
+        }
+
+        ////////////////////////////////////////////////////////////////////
+
+        if (clubList.size() < 10) {
+            addClub = clubList.size();
+        } else {
+            addClub = 10;
+        }
+
+        ///////////////////////////////////////////////////////////////////
+
+        //TODO: change algorithm to a more random algo...
+        for (int i = 0; i < addRest; i++) {
+            placeList.add(restaurantList.get(i));
+        }
+
+        for (int i = 0; i < addBar; i++) {
+            placeList.add(barList.get(i));
+        }
+
+        for (int i = 0; i < addClub; i++) {
+            placeList.add(clubList.get(i));
+        }
+
+
+        // Initialize the place markers list
+        restaurantMarkers = new ArrayList<>();
+        barMarkers = new ArrayList<>();
+        clubMarkers = new ArrayList<>();
+
+        sortPlaceMarkersIntoList(restaurantList);
+        sortPlaceMarkersIntoList(barList);
+        sortPlaceMarkersIntoList(clubList);
+
+    }
+
+    /**
+     *  Creates a MarkerOption for a place and stores it in a List, according to the place type
+     * @param places
+     */
+    private void sortPlaceMarkersIntoList(List<Place> places) {
+
+        if (places != null) {
+            for (int i = 0; i < places.size(); i++) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                Place googlePlace = places.get(i);
+
+                String placeName = googlePlace.getName();
+
+                double latitude = googlePlace.getLatitude();
+                double longitude = googlePlace.getLongitude();
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                markerOptions.position(latLng).title(placeName);
+
+                switch (googlePlace.getSingleType()) {
+                    case "restaurant":
+                        restaurantMarkers.add(markerOptions);
+                        break;
+                    case "bar":
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        barMarkers.add(markerOptions);
+                        break;
+                    case "night_club":
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                        clubMarkers.add(markerOptions);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void showNearbyPlaces(List<MarkerOptions> placeMarkers) {
+
+        if (placeMarkers != null) {
+            for (int i = 0; i < placeMarkers.size(); i++) {
+                mMap.addMarker(placeMarkers.get(i));
+            }
+        }
+    }
+
     /**
      * Adds style JSON to map
      */
@@ -386,19 +530,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
     /**
      * initializes all variables and methods
      */
     private void initialize() {
+
         // Variables
         mapLayout = findViewById(R.id.mapLayout);
 
-        venueList = new ArrayList<>();
+        //venueList = new ArrayList<>();
+        placeList = new ArrayList<>();
+        restaurantList = new ArrayList<>();
+        barList = new ArrayList<>();
+        clubList = new ArrayList<>();
+
+        restaurantListReady = false;
+        barListReady = false;
+        clubListReady = false;
 
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
-        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedVenueBottomSheetLayout));
+        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
 
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
@@ -415,14 +566,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBtnIsPressed = false;
 
         goBackBtn = findViewById(R.id.goBackImage);
-        svNameTV = findViewById(R.id.svName);
-        svRatingTV = findViewById(R.id.svRating);
-        svTypeTV = findViewById(R.id.svType);
-        svDescriptionTV = findViewById(R.id.svDescription);
-        svAddressTV = findViewById(R.id.svAddress);
-        svOpenClosedTV = findViewById(R.id.svOpenClosed);
-        svPhoneNumTV = findViewById(R.id.svPhoneNumber);
-        svURLTV = findViewById(R.id.svURL);
+        spNameTV = findViewById(R.id.spName);
+        spRatingTV = findViewById(R.id.spRating);
+        spTypeTV = findViewById(R.id.spType);
+        //spDescriptionTV = findViewById(R.id.spDescription);
+        spAddressTV = findViewById(R.id.spAddress);
+        spOpenClosedTV = findViewById(R.id.spOpenClosed);
+        spPhoneNumTV = findViewById(R.id.spPhoneNumber);
+        spURLTV = findViewById(R.id.spURL);
 
         appWasPaused = false;
 
@@ -439,70 +590,105 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterClubBtnListener();
         goBackBtnListener();
 
-        initializeListData();
-        createRecyclerList();
+        //initializeListData();
+        //createRecyclerList();
 
         darkenMap(0);
 
     }
 
-    /**
+    /*
+    private void movePlacesToVenueList(List<Place> placesList) {
+        venueList.clear();
+        
+        for (int i = 0; i < placesList.size(); i++) {
+            String name = placesList.get(i).getName();
+            String type = placesList.get(i).getSingleType();
+
+            Venue venue = new Venue(name, 5, type, "124 dacula rd.", "description, description", 5.0, 7.0);
+            venueList.add(venue);
+        }
+    } */
+
+    protected void onPostExecute() {
+        placeList = getNearbyPlaces.getNearbyPlacesList();
+        // movePlacesToVenueList(getNearbyPlaces.getNearbyPlacesList());
+        createRecyclerList();
+    }
+
+    /*
      * adds data to venueList
-     */
+
     private void initializeListData() {
         for (int i = 0; i < 5; i++) {
             Venue v = new Venue("Hangovers", 5, "Bar", "123 Piedmont Dr.", "Very nice place.", 3, 7);
 
             venueList.add(v);
         }
+    } */
+
+    /**11
+     * TODO: set all place details...
+     * loads selected place data onto selectedPlaceBottomSheet
+     * @param sp user-selected place
+     */
+    private void setSelectedPlaceBottomSheetData(Place sp) {
+        spNameTV.setText(sp.getName());
+        spRatingTV.setText(Double.toString(sp.getRating()));
+        spTypeTV.setText(sp.getSingleType());
+        spAddressTV.setText(sp.getAddress());
+        spPhoneNumTV.setText(sp.getPhone());
+        spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
+        //svDescriptionTV.setText(sp.getDescription());
     }
 
     /**
-     * TODO: set all venue details...
-     * loads selected venue data onto selectedVenueBottomSheet
-     * @param sv user-selected venue
+     * TODO: complete method.
+     * @param url - full url
+     * @return simplified url
      */
-    private void setSelectedVenueBottomSheetData(Venue sv) {
-        svNameTV.setText(sv.getName());
-        svRatingTV.setText(Double.toString(sv.getRating()));
-        svTypeTV.setText(sv.getType());
-        svAddressTV.setText(sv.getAddress());
-        svDescriptionTV.setText(sv.getDescription());
+    private String getSimplifiedPlaceWebsite(String url) {
+        return url;
     }
 
     /**
      * creates RecyclerView
      */
     private void createRecyclerList() {
+        String a = "size: " + placeList.size() + "";
+
+        Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
+        Log.d("NightOwl:", " creating recyclerList");
+
         RecyclerView rv = findViewById(R.id.recyclerView);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(llm);
 
-        MyAdapter adapter = new MyAdapter(venueList, this);
+        MyAdapter adapter = new MyAdapter(placeList, this);
         rv.setAdapter(adapter);
 
     }
 
     /**
-     * @param selectedVenue user-selected venue
+     * @param selectedPlace user-selected place
      */
-    public void cardViewClicked(Venue selectedVenue) {
-        setSelectedVenueBottomSheetData(selectedVenue);
+    public void cardViewClicked(Place selectedPlace) {
+        setSelectedPlaceBottomSheetData(selectedPlace);
 
-        bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses venue List BottomSheet
+        bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses Place List BottomSheet
 
-        bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Venue BottomSheet
+        bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Place BottomSheet
     }
 
     private void goBackBtnListener() {
         goBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Venue BottomSheet
+                bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Place BottomSheet
 
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
             }
         });
     }
@@ -575,7 +761,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     /**
-     * BottomSheet Listener 2 - SELECTED VENUE BOTTOM SHEET
+     * BottomSheet Listener 2 - SELECTED PLACE BOTTOM SHEET
      */
     private void bottomSheetListener2() {
         bottomSheetBehavior2.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -642,16 +828,103 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBarBtn.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     *
+     */
     private void filterRestaurantsBtnListener() {
+        filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("NightOwl", "filter_button RESTAURANT clicked");
 
+                mMap.clear();
+                showNearbyPlaces(restaurantMarkers);
+//                for (MarkerOptions marker : barMarkers) {
+//                    marker.visible(false);
+//                }
+//
+//                for (MarkerOptions marker : clubMarkers) {
+//                    marker.visible(false);
+//                }
+//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+//
+//                mMap.clear();
+//                Object[] urlParams = new Object[8];
+//                urlParams[0] = Double.toString(33.9397);    // for emulator
+//                urlParams[1] = Double.toString(-84.5197);   // for emulator
+//                urlParams[2] = "restaurant";
+//                urlParams[3] = PROXIMITY_RADIUS;
+//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+//                urlParams[5] = null;
+//                urlParams[6] = null;
+//                urlParams[7] = mMap;
+//
+//                getNearbyPlaces.execute(urlParams);
+            }
+        });
     }
 
+    /**
+     *
+     */
     private void filterBarBtnListener() {
+        filterBarBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Log.d("NightOwl", "filter_button BAR clicked");
 
+                mMap.clear();
+                showNearbyPlaces(barMarkers);
+//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+//
+//                mMap.clear();
+//                Object[] urlParams = new Object[8];
+//                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+//                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+//                urlParams[0] = Double.toString(33.9397);    // for emulator
+//                urlParams[1] = Double.toString(-84.5197);   // for emulator
+//                urlParams[2] = "bar";
+//                urlParams[3] = PROXIMITY_RADIUS;
+//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+//                urlParams[5] = null;
+//                urlParams[6] = null;
+//                urlParams[7] = mMap;
+//
+//                getNearbyPlaces.execute(urlParams);
+
+            }
+        });
     }
 
+    /**
+     *
+     */
     private void filterClubBtnListener() {
+        filterClubBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Log.d("NightOwl", "filter_button CLUB clicked");
 
+                mMap.clear();
+                showNearbyPlaces(clubMarkers);
+//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+//
+//                mMap.clear();
+//                Object[] urlParams = new Object[8];
+//                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+//                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+//                urlParams[0] = Double.toString(33.9397);    // for emulator
+//                urlParams[1] = Double.toString(-84.5197);   // for emulator
+//                urlParams[2] = "night_club";
+//                urlParams[3] = PROXIMITY_RADIUS;
+//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+//                urlParams[5] = null;
+//                urlParams[6] = null;
+//                urlParams[7] = mMap;
+//
+//                getNearbyPlaces.execute(urlParams);
+            }
+        });
     }
 
     private void tabNearYouListener() {
@@ -659,7 +932,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabNearYouLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -680,7 +953,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -701,7 +974,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 // expand BottomSheet
-                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Venue List BottomSheet
+                bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
 
                 // set new selected colors
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabSelected));
@@ -716,6 +989,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
+
 
     /**
      * Darkens the map
