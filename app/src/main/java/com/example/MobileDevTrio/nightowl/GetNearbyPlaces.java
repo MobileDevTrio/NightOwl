@@ -2,7 +2,9 @@ package com.example.MobileDevTrio.nightowl;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -28,6 +30,8 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
     private Context context;
 
+    private PlaceType placeType;
+
     public GetNearbyPlaces(Context context) {
         this.context = context;
     }
@@ -36,13 +40,15 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
     protected List<Place> doInBackground(Object... objects) {
         mMap = (GoogleMap) objects[7];
 
-        PlaceType placeType;
+        Log.d("NightOwl:", " doInBackground() is running...");
+
+
         switch((String)objects[2]) {
             case "restaurant": placeType = PlaceType.RESTAURANT;
                 break;
             case "bar": placeType = PlaceType.BAR;
                 break;
-            case "club": placeType = PlaceType.CLUB;
+            case "night_club": placeType = PlaceType.CLUB;
                 break;
             default: placeType =  PlaceType.RESTAURANT;
                 break;
@@ -91,10 +97,21 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
     @Override
     protected void onPostExecute(List<Place> places) {
 
-        showNearbyPlaces(places);
+        //showNearbyPlaces(places);
+        //((MapsActivity) context).onPostExecute();
 
+        switch (placeType) {
+            case RESTAURANT: ((MapsActivity) context).setRestaurantsList(places);
+                //((MapsActivity) context).checkIfReady();
+                break;
+            case BAR: ((MapsActivity) context).setBarsList(places);
+                //((MapsActivity) context).checkIfReady();
+                break;
+            case CLUB: ((MapsActivity) context).setClubsList(places);
+                ((MapsActivity) context).checkIfReady();
+                break;
+        }
 
-        ((MapsActivity) context).onPostExecute();
     }
 
     public List<Place> getNearbyPlacesList() {

@@ -94,7 +94,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected boolean appWasPaused;
 
     // TODO: Determine where to initialize this nearbyPlaces
-    private List<Place> placeList;
+    private List<Place> placeList, restaurantList, barList, clubList;
+    boolean restaurantListReady, barListReady, clubListReady;
     private GetNearbyPlaces getNearbyPlaces;
 
     @Override
@@ -115,68 +116,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         initialize();
 
         // TODO: Revise logic to filter places, https://stackoverflow.com/questions/33006206/how-to-hide-show-groups-of-markers-by-category-with-google-maps-in-android?noredirect=1&lq=1
-        filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
 
-                mMap.clear();
-                Object[] urlParams = new Object[8];
-                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-                urlParams[2] = "restaurant";
-                urlParams[3] = PROXIMITY_RADIUS;
-                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-                urlParams[5] = null;
-                urlParams[6] = null;
-                urlParams[7] = mMap;
 
-                getNearbyPlaces.execute(urlParams);
-            }
-        });
-        
-        //Bar filter button functionality
-        filterBarBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
-
-                mMap.clear();
-                Object[] urlParams = new Object[8];
-                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-                urlParams[2] = "bar";
-                urlParams[3] = PROXIMITY_RADIUS;
-                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-                urlParams[5] = null;
-                urlParams[6] = null;
-                urlParams[7] = mMap;
-
-                getNearbyPlaces.execute(urlParams);
-
-            }
-        });
-
-        //Nightclub filter button functionality
-        filterClubBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
-
-                mMap.clear();
-                Object[] urlParams = new Object[8];
-                urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-                urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-                urlParams[2] = "night_club";
-                urlParams[3] = PROXIMITY_RADIUS;
-                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-                urlParams[5] = null;
-                urlParams[6] = null;
-                urlParams[7] = mMap;
-
-                getNearbyPlaces.execute(urlParams);
-            }
-        });
     }
 
     /**
@@ -252,7 +193,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng latLng = new LatLng(latitude, longitude);
                 markerOptions
                         .position(latLng)
-                        .title(placeName + " : " + phone);
+                        .title(placeName + " : " + website);
 
                 mMap.addMarker(markerOptions);
 
@@ -340,7 +281,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful()) {
-                            // TODO: When device location is turned off, the task.getResult() returns a NULL. This causes an error when moving the camera, and causes app to crash.
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
@@ -348,6 +288,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(mLastKnownLocation.getLatitude(),
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
+                                /*******************************************************************
+                                 * GET PLACES HERE
+                                 */
+
+                                startGettingPlaces();
+
+
+
                             } else {
                                 Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
 
@@ -378,6 +327,162 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**********************************************************************************************************************************************************
+     **********************************************************************************************************************************************************
+     *                                     GET NEARBY PLACES
+     */
+
+    private void startGettingPlaces() {
+        getRestaurants();
+        getBars();
+        getClubs();
+
+    }
+
+    private void getRestaurants() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Restaurant");
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+        //mMap.clear();
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "restaurant";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setRestaurantsList(List<Place> restaurantList) {
+        this.restaurantList = restaurantList;
+        restaurantListReady = true;
+    }
+
+    public void getBars() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Bars");
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+        //mMap.clear();
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "bar";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setBarsList(List<Place> barList) {
+        this.barList = barList;
+        barListReady = true;
+    }
+
+    public void getClubs() {
+        Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
+
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+        //mMap.clear();
+        Object[] urlParams = new Object[8];
+        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        urlParams[0] = Double.toString(33.9397);    // for emulator
+        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[2] = "night_club";
+        urlParams[3] = PROXIMITY_RADIUS;
+        urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+        urlParams[5] = null;
+        urlParams[6] = null;
+        urlParams[7] = mMap;
+
+        getNearbyPlaces.execute(urlParams);
+    }
+
+    public void setClubsList(List<Place> clubList) {
+        this.clubList = clubList;
+        clubListReady = true;
+    }
+
+    /**
+     * Checks if all lists are ready
+     */
+    public void checkIfReady() {
+        if(restaurantListReady && barListReady && clubListReady) {
+            setPlaces();
+        }
+    }
+
+    private void setPlaces() {
+        Log.d("NightOwl-d", "initial - setting places...");
+
+        setNearbyPlacesList();
+
+        createRecyclerList();
+
+        showNearbyPlaces(placeList);
+    }
+
+    /**
+     * Merges three types lists into one lists - placesList
+     */
+    private void setNearbyPlacesList() {
+        int addRest;
+        int addBar;
+        int addClub;
+
+        if(restaurantList.size() < 10) {
+            addRest = restaurantList.size();
+        } else {
+            addRest = 10;
+        }
+
+        ///////////////////////////////////////////////////////////////////
+
+        if(barList.size() < 10) {
+            addBar = barList.size();
+        } else {
+            addBar = 10;
+        }
+
+        ////////////////////////////////////////////////////////////////////
+
+        if(clubList.size() < 10) {
+            addClub = clubList.size();
+        } else {
+            addClub = 10;
+        }
+
+        ///////////////////////////////////////////////////////////////////
+
+        //TODO: change algorithm to a more random algo...
+        for(int i = 0; i < addRest; i++) {
+            placeList.add(restaurantList.get(i));
+        }
+
+        for(int i = 0; i < addBar; i++) {
+            placeList.add(barList.get(i));
+        }
+
+        for(int i = 0; i < addClub; i++) {
+            placeList.add(clubList.get(i));
+        }
+
+    }
+
     /**
      * Adds style JSON to map
      */
@@ -402,12 +507,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * initializes all variables and methods
      */
     private void initialize() {
-        placeList = new ArrayList<>();
 
         // Variables
         mapLayout = findViewById(R.id.mapLayout);
 
         //venueList = new ArrayList<>();
+        placeList = new ArrayList<>();
+        restaurantList = new ArrayList<>();
+        barList = new ArrayList<>();
+        clubList = new ArrayList<>();
+
+        restaurantListReady = false;
+        barListReady = false;
+        clubListReady = false;
 
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
@@ -488,7 +600,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     } */
 
-    /**
+    /**11
      * TODO: set all place details...
      * loads selected place data onto selectedPlaceBottomSheet
      * @param sp user-selected place
@@ -499,7 +611,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spTypeTV.setText(sp.getSingleType());
         spAddressTV.setText(sp.getAddress());
         spPhoneNumTV.setText(sp.getPhone());
+        spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
         //svDescriptionTV.setText(sp.getDescription());
+    }
+
+    /**
+     * TODO: complete method.
+     * @param url - full url
+     * @return simplified url
+     */
+    private String getSimplifiedPlaceWebsite(String url) {
+        return url;
     }
 
     /**
@@ -509,7 +631,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String a = "size: " + placeList.size() + "";
 
         Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
-
+        Log.d("NightOwl:", " creating recyclerList");
 
         RecyclerView rv = findViewById(R.id.recyclerView);
 
@@ -679,16 +801,90 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBarBtn.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     *
+     */
     private void filterRestaurantsBtnListener() {
+        filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("NightOwl", "filter_button RESTAURANT clicked");
 
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+                mMap.clear();
+                Object[] urlParams = new Object[8];
+                urlParams[0] = Double.toString(33.9397);    // for emulator
+                urlParams[1] = Double.toString(-84.5197);   // for emulator
+                urlParams[2] = "restaurant";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
+
+                getNearbyPlaces.execute(urlParams);
+            }
+        });
     }
 
+    /**
+     *
+     */
     private void filterBarBtnListener() {
+        filterBarBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Log.d("NightOwl", "filter_button BAR clicked");
 
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+                mMap.clear();
+                Object[] urlParams = new Object[8];
+                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+                urlParams[0] = Double.toString(33.9397);    // for emulator
+                urlParams[1] = Double.toString(-84.5197);   // for emulator
+                urlParams[2] = "bar";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
+
+                getNearbyPlaces.execute(urlParams);
+
+            }
+        });
     }
 
+    /**
+     *
+     */
     private void filterClubBtnListener() {
+        filterClubBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Log.d("NightOwl", "filter_button CLUB clicked");
 
+                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
+
+                mMap.clear();
+                Object[] urlParams = new Object[8];
+                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+                urlParams[0] = Double.toString(33.9397);    // for emulator
+                urlParams[1] = Double.toString(-84.5197);   // for emulator
+                urlParams[2] = "night_club";
+                urlParams[3] = PROXIMITY_RADIUS;
+                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
+                urlParams[5] = null;
+                urlParams[6] = null;
+                urlParams[7] = mMap;
+
+                getNearbyPlaces.execute(urlParams);
+            }
+        });
     }
 
     private void tabNearYouListener() {
@@ -753,6 +949,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
+
 
     /**
      * Darkens the map
