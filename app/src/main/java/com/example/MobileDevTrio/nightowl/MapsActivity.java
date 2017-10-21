@@ -17,9 +17,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -85,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
 
     // Filter Image Buttons
-    boolean filterBtnIsPressed;
+    protected boolean filterBtnIsPressed;
     protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
 
     // SelectedPlaceBottomSheet Views
@@ -94,6 +99,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
+
+    // Loading Screen
+    protected RelativeLayout loadingScreenLayout;
+    protected ProgressBar pbRestaurants, pbBars, pbClubs;
+    protected ImageView  checkRestaurants, checkBars, checkClubs;
+
+
+
 
     // TODO: Determine where to initialize this nearbyPlaces
     private List<Place> placeList, restaurantList, barList, clubList;
@@ -307,10 +320,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
 
     private void startGettingPlaces() {
+        showLoadingScreen();
         getRestaurants();
         getBars();
         getClubs();
-
     }
 
     private void getRestaurants() {
@@ -318,10 +331,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "restaurant";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -336,16 +349,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setRestaurantsList(List<Place> restaurantList) {
         this.restaurantList = restaurantList;
         restaurantListReady = true;
+        setRestaurantsCheckMark();
     }
 
     public void getBars() {
         Log.d("NightOwl-d", "initial - getPlaces() - Bars");
 
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "bar";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -360,16 +374,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setBarsList(List<Place> barList) {
         this.barList = barList;
         barListReady = true;
+        setBarsCheckMark();
     }
 
     public void getClubs() {
         Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
 
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "night_club";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -384,6 +399,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setClubsList(List<Place> clubList) {
         this.clubList = clubList;
         clubListReady = true;
+        showClubsCheckMark();
+
+        //hideLoadingScreen();
     }
 
     /**
@@ -393,6 +411,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(restaurantListReady && barListReady && clubListReady) {
             setPlaces();
         }
+
+        // Hides Loading Screen
+        //hideLoadingScreen();
     }
 
     private void setPlaces() {
@@ -510,6 +531,109 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+    /**********************************************************************************************************************************************************
+     **********************************************************************************************************************************************************
+     *                                     LOADING SCREEN
+     */
+
+    private void showLoadingScreen() {
+        setLoadingScreenVisibility();
+
+    }
+
+    /**
+     * TODO: make animation
+     */
+    private void hideLoadingScreen() {
+        Log.d("NightOwl", "Hiding loading screen...");
+        loadingScreenSlideUp();
+        loadingScreenLayout.setVisibility(View.GONE);
+    }
+
+    private void setLoadingScreenVisibility() {
+        loadingScreenLayout.setVisibility(View.VISIBLE);
+
+        pbRestaurants.setVisibility(View.VISIBLE);
+        pbBars.setVisibility(View.VISIBLE);
+        pbClubs.setVisibility(View.VISIBLE);
+
+        checkRestaurants.setVisibility(View.GONE);
+        checkBars.setVisibility(View.GONE);
+        checkClubs.setVisibility(View.GONE);
+    }
+
+    /**
+     * Sets restaurants check mark to VISIBLE
+     */
+    private void setRestaurantsCheckMark() {
+        pbRestaurants.setVisibility(View.GONE);
+        checkRestaurants.setVisibility(View.VISIBLE);
+
+        Animation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(300);
+
+        checkRestaurants.startAnimation(scaleAnimation);
+    }
+
+    /**
+     * Sets bars check mark to VISIBLE
+     */
+    private void setBarsCheckMark() {
+        pbBars.setVisibility(View.GONE);
+        checkBars.setVisibility(View.VISIBLE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(400);
+
+        checkBars.startAnimation(scaleAnimation);
+    }
+
+    /**
+     * Sets clubs check mark to VISIBLE
+     */
+    private void showClubsCheckMark() {
+        pbClubs.setVisibility(View.GONE);
+        checkClubs.setVisibility(View.VISIBLE);
+
+        Animation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(400);
+
+        checkClubs.startAnimation(scaleAnimation);
+
+        scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                hideLoadingScreen();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        //hideLoadingScreen();
+    }
+
+    private void loadingScreenSlideUp() {
+        Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.slide_up);
+
+        loadingScreenLayout.setAnimation(slide_up);
+    }
+
+
+
+
     /**
      * Adds style JSON to map
      */
@@ -547,6 +671,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restaurantListReady = false;
         barListReady = false;
         clubListReady = false;
+
+        // Loading Screen
+        loadingScreenLayout = findViewById(R.id.loadingScreenLayout);
+        pbRestaurants = findViewById(R.id.loadingRestaurantsProgressBar);
+        pbBars = findViewById(R.id.loadingBarsProgressBar);
+        pbClubs = findViewById(R.id.loadingClubsProgressBar);
+        checkRestaurants = findViewById(R.id.check_restaurants);
+        checkBars = findViewById(R.id.check_bars);
+        checkClubs = findViewById(R.id.check_clubs);
+
 
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
@@ -594,6 +728,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //createRecyclerList();
 
         darkenMap(0);
+
+        showLoadingScreen();
 
     }
 
