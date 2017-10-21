@@ -151,6 +151,7 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
         stringBuilder.append("&").append(PARAM_OPENNOW);
         stringBuilder.append("&").append(PARAM_RADIUS).append(radius);
 
+        //System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
     }
 }
