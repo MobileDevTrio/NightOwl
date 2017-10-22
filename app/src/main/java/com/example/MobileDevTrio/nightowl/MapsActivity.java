@@ -51,9 +51,7 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
 /**
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
- *  TODO: add phone number button to location details view
  *  TODO: add call functionality
- *  TODO: show filtered locations in the locations list/RecyclerView
  *  TODO: parse the hours of a place
  *  TODO: show the hours of a place in location details view
  *  TODO: add method to check if location services is turned on
@@ -101,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Filter Image Buttons
     protected boolean filterBtnIsPressed;
-    protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
+    protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn, clearFilterBtn;
 
     // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
@@ -429,7 +427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setNearbyPlacesList();
 
-        createRecyclerList();
+        createRecyclerList(placeList);
 
         // Show the markers on the map
         showNearbyPlaces(restaurantMarkers);
@@ -705,6 +703,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn = findViewById(R.id.filterRestaurants);
         filterClubBtn = findViewById(R.id.filterClub);
         filterBarBtn = findViewById(R.id.filterBars);
+        clearFilterBtn = findViewById(R.id.clearFilterBtn);
         filterBtnIsPressed = false;
 
         goBackBtn = findViewById(R.id.goBackImage);
@@ -736,7 +735,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spStarEmpty4 = findViewById(R.id.spRatingStarEmpty4);
         spStarEmpty5 = findViewById(R.id.spRatingStarEmpty5);
 
-
         appWasPaused = false;
 
 
@@ -750,6 +748,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtnListener();
         filterBarBtnListener();
         filterClubBtnListener();
+        clearFilterBtnListener();
         goBackBtnListener();
 
         //initializeListData();
@@ -946,7 +945,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * creates RecyclerView
      */
-    private void createRecyclerList() {
+    private void createRecyclerList(List<Place> placeList) {
         String a = "size: " + placeList.size() + "";
 
         Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
@@ -986,6 +985,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
     /**
      * BottomSheet Listener
      */
@@ -1004,6 +1004,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     filterRestaurantsBtn.setTranslationX(1);
                     filterBarBtn.setTranslationX(1);
                     filterClubBtn.setTranslationX(1);
+                    clearFilterBtn.setTranslationX(1);
 
                 } else if (newState == STATE_COLLAPSED) {
                     filterBtnIsPressed = false;
@@ -1022,9 +1023,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (filterBtnIsPressed) {
                         showFilterButtons();
 
-                        filterRestaurantsBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
-                        filterBarBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
-                        filterClubBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
+                        filterRestaurantsBtn.setTranslationX(2200 * ((slideOffset - 2) * (-1)) - 2200);
+                        filterBarBtn.setTranslationX(2000 * ((slideOffset - 2) * (-1)) - 2000);
+                        filterClubBtn.setTranslationX(1800 * ((slideOffset - 2) * (-1)) - 1800);
+                        clearFilterBtn.setTranslationX(-2000 * ((slideOffset - 2) * (-1)) + 2000);
 
                         // Darken Map
                         darkenMap((int) (400 * (slideOffset + 1) - 700));
@@ -1110,12 +1112,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn.setVisibility(View.VISIBLE);
         filterClubBtn.setVisibility(View.VISIBLE);
         filterBarBtn.setVisibility(View.VISIBLE);
+        clearFilterBtn.setVisibility(View.VISIBLE);
     }
 
     private void hideFilterButtons() {
         filterRestaurantsBtn.setVisibility(View.INVISIBLE);
         filterClubBtn.setVisibility(View.INVISIBLE);
         filterBarBtn.setVisibility(View.INVISIBLE);
+        clearFilterBtn.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -1129,6 +1133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(restaurantMarkers);
+                createRecyclerList(restaurantList);
             }
         });
     }
@@ -1144,6 +1149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(barMarkers);
+                createRecyclerList(barList);
             }
         });
     }
@@ -1159,6 +1165,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(clubMarkers);
+                createRecyclerList(clubList);
+            }
+        });
+    }
+
+    /**
+     *
+     */
+    private void clearFilterBtnListener() {
+        clearFilterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                showNearbyPlaces(restaurantMarkers);
+                showNearbyPlaces(barMarkers);
+                showNearbyPlaces(clubMarkers);
+                createRecyclerList(placeList);
             }
         });
     }
