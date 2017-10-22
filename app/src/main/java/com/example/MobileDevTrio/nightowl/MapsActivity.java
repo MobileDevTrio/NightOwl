@@ -930,7 +930,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @return simplified url
      */
     private String getSimplifiedPlaceWebsite(String URL) {
-        String simplifiedURL = "";
+        String simplifiedURL = "No Website Available.";
 
         if(URL != null) {
             if(!URL.isEmpty()) {
@@ -940,7 +940,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
 
-        simplifiedURL = "No Website Available.";
         return simplifiedURL;
     }
 
