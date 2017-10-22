@@ -299,8 +299,7 @@
         </LinearLayout>
 
 
-
-
+        <!--
         <View
             android:id="@+id/placePicture"
             android:layout_width="60dp"
@@ -308,7 +307,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@color/colorAccent"/>
+            android:background="@color/colorAccent"/> -->
 
 
     </RelativeLayout>
