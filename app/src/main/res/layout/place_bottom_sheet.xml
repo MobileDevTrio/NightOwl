@@ -37,13 +37,198 @@
                 android:textColor="@color/placeName"
                 android:text="@string/place_title"/>
 
-            <TextView
-                android:id="@+id/spRating"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="21dp"
-                android:textSize="15sp"
-                android:textColor="@color/placeDetails"
-                android:text="@string/place_rating"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/spRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="21dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/placeDetails"
+                    android:text="@string/place_rating"/>
+
+
+                <!-- EMPTY STARS   -->
+
+                <ImageView
+                    android:id="@+id/spRatingStarEmpty1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/spRating"
+                    android:layout_toEndOf="@id/spRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarEmpty2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarEmpty1"
+                    android:layout_toEndOf="@+id/spRatingStarEmpty1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarEmpty3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarEmpty2"
+                    android:layout_toEndOf="@+id/spRatingStarEmpty2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarEmpty4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarEmpty3"
+                    android:layout_toEndOf="@+id/spRatingStarEmpty3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarEmpty5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarEmpty4"
+                    android:layout_toEndOf="@+id/spRatingStarEmpty4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <!-- FULL STARS   -->
+
+                <ImageView
+                    android:id="@+id/spRatingStarFull1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/spRating"
+                    android:layout_toEndOf="@id/spRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarFull2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarFull1"
+                    android:layout_toEndOf="@+id/spRatingStarFull1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarFull3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarFull2"
+                    android:layout_toEndOf="@+id/spRatingStarFull2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarFull4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarFull3"
+                    android:layout_toEndOf="@+id/spRatingStarFull3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarFull5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarFull4"
+                    android:layout_toEndOf="@+id/spRatingStarFull4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+
+                <!-- HALF STARS   -->
+
+                <ImageView
+                    android:id="@+id/spRatingStarHalf1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/spRating"
+                    android:layout_toEndOf="@id/spRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarHalf2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarHalf1"
+                    android:layout_toEndOf="@+id/spRatingStarHalf1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarHalf3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarHalf2"
+                    android:layout_toEndOf="@+id/spRatingStarHalf2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarHalf4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarHalf3"
+                    android:layout_toEndOf="@+id/spRatingStarHalf3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/spRatingStarHalf5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/spRatingStarHalf4"
+                    android:layout_toEndOf="@+id/spRatingStarHalf4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/spType"
@@ -64,13 +249,39 @@
 
         </View>
 
-        <View
-            android:id="@+id/callIconBottomSheet"
+        <RelativeLayout
+            android:id="@+id/callButtonLayout1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
-        </View>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/selectedPlacePhoneIcon1"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="5dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_phone"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="3dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/placeName"
+                    android:text="CALL"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
 
     </LinearLayout>
 
@@ -177,7 +388,7 @@
                         android:layout_marginStart="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_marginEnd="5dp"
-                        android:textSize="10sp"
+                        android:textSize="5sp"
                         android:textColor="@color/placeDetails"
                         android:text="@string/spacer_circle"/>
 

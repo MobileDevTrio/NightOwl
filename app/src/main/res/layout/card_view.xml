@@ -32,13 +32,198 @@
             android:layout_height="18dp"
             android:layout_below="@id/placeName">
 
-            <TextView
-                android:id="@+id/placeRating"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/placeDetails"
-                android:text="@string/place_rating"/>
+                >
+
+                <TextView
+                    android:id="@+id/placeRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/placeDetails"
+                    android:text="@string/place_rating"/>
+
+
+                <!-- EMPTY STARS   -->
+
+                <ImageView
+                    android:id="@+id/placeRatingStarEmpty1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/placeRating"
+                    android:layout_toEndOf="@id/placeRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarEmpty2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarEmpty1"
+                    android:layout_toEndOf="@+id/placeRatingStarEmpty1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarEmpty3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarEmpty2"
+                    android:layout_toEndOf="@+id/placeRatingStarEmpty2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarEmpty4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarEmpty3"
+                    android:layout_toEndOf="@+id/placeRatingStarEmpty3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarEmpty5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarEmpty4"
+                    android:layout_toEndOf="@+id/placeRatingStarEmpty4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_border"/>
+
+                <!-- FULL STARS   -->
+
+                <ImageView
+                    android:id="@+id/placeRatingStarFull1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/placeRating"
+                    android:layout_toEndOf="@id/placeRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarFull2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarFull1"
+                    android:layout_toEndOf="@+id/placeRatingStarFull1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarFull3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarFull2"
+                    android:layout_toEndOf="@+id/placeRatingStarFull2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarFull4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarFull3"
+                    android:layout_toEndOf="@+id/placeRatingStarFull3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarFull5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarFull4"
+                    android:layout_toEndOf="@+id/placeRatingStarFull4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star"/>
+
+
+                <!-- HALF STARS   -->
+
+                <ImageView
+                    android:id="@+id/placeRatingStarHalf1"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/placeRating"
+                    android:layout_toEndOf="@id/placeRating"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarHalf2"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarHalf1"
+                    android:layout_toEndOf="@+id/placeRatingStarHalf1"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarHalf3"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarHalf2"
+                    android:layout_toEndOf="@+id/placeRatingStarHalf2"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarHalf4"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarHalf3"
+                    android:layout_toEndOf="@+id/placeRatingStarHalf3"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+                <ImageView
+                    android:id="@+id/placeRatingStarHalf5"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/placeRatingStarHalf4"
+                    android:layout_toEndOf="@+id/placeRatingStarHalf4"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_star_half"/>
+
+
+
+            </RelativeLayout>
 
         </LinearLayout>
 

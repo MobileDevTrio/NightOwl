@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -113,6 +114,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected RelativeLayout loadingScreenLayout;
     protected ProgressBar pbRestaurants, pbBars, pbClubs;
     protected ImageView  checkRestaurants, checkBars, checkClubs;
+
+    //Ratings stars
+    ImageView spStarEmpty1, spStarEmpty2, spStarEmpty3, spStarEmpty4, spStarEmpty5,
+            spStarFull1, spStarFull2, spStarFull3, spStarFull4, spStarFull5,
+            spStarHalf1, spStarHalf2, spStarHalf3, spStarHalf4, spStarHalf5;
 
 
 
@@ -711,6 +717,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
 
+        // Rating Stars
+        spStarFull1 = findViewById(R.id.spRatingStarFull1);
+        spStarFull2 = findViewById(R.id.spRatingStarFull2);
+        spStarFull3 = findViewById(R.id.spRatingStarFull3);
+        spStarFull4 = findViewById(R.id.spRatingStarFull4);
+        spStarFull5 = findViewById(R.id.spRatingStarFull5);
+
+        spStarHalf1 = findViewById(R.id.spRatingStarHalf1);
+        spStarHalf2 = findViewById(R.id.spRatingStarHalf2);
+        spStarHalf3 = findViewById(R.id.spRatingStarHalf3);
+        spStarHalf4 = findViewById(R.id.spRatingStarHalf4);
+        spStarHalf5 = findViewById(R.id.spRatingStarHalf5);
+
+        spStarEmpty1 = findViewById(R.id.spRatingStarEmpty1);
+        spStarEmpty2 = findViewById(R.id.spRatingStarEmpty2);
+        spStarEmpty3 = findViewById(R.id.spRatingStarEmpty3);
+        spStarEmpty4 = findViewById(R.id.spRatingStarEmpty4);
+        spStarEmpty5 = findViewById(R.id.spRatingStarEmpty5);
+
+
         appWasPaused = false;
 
 
@@ -771,22 +797,151 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param sp user-selected place
      */
     private void setSelectedPlaceBottomSheetData(Place sp) {
+        resetRatingStarVisibility();
         spNameTV.setText(sp.getName());
         spRatingTV.setText(Double.toString(sp.getRating()));
-        spTypeTV.setText(sp.getSingleType());
+        setSelectedPlaceRatingStars(Double.toString(sp.getRating()));
+        spTypeTV.setText(sp.getSimplifiedType());
         spAddressTV.setText(sp.getAddress());
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
         //svDescriptionTV.setText(sp.getDescription());
     }
 
+    private void setSelectedPlaceRatingStars(String rating) {
+        int part1 = 0, part2 = 0;
+        if(!rating.isEmpty()) {
+            String[] part = rating.split("\\.");
+            part1 = Integer.parseInt(part[0]);
+            part2 = Integer.parseInt(part[1]);
+        }
+
+        // Set Full Stars
+        if (part1 >= 1) {
+            spStarFull1.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 2) {
+            spStarFull2.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 3) {
+            spStarFull3.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 4) {
+            spStarFull4.setVisibility(View.VISIBLE);
+        }
+        if (part1 == 5) {
+            spStarFull5.setVisibility(View.VISIBLE);
+        }
+
+
+        // Set Initial Empty/Half/Full Stars
+        if(part1 == 0) {
+            if(part2 < 3) {
+                spStarEmpty1.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf1.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull1.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 1) {
+            spStarFull1.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty2.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf2.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull2.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 2) {
+            spStarFull2.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty3.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf3.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull3.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 3) {
+            spStarFull3.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty4.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf4.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull4.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 4) {
+            spStarFull4.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty5.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf5.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull5.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 5) {
+            spStarFull5.setVisibility(View.VISIBLE);
+        }
+
+        // Set Remaining Empty Stars
+        if(part1 <= 3) {
+            spStarEmpty5.setVisibility(View.VISIBLE);
+        }
+        if(part1 <= 2) {
+            spStarEmpty4.setVisibility(View.VISIBLE);
+        }
+        if(part1 <= 1) {
+            spStarEmpty3.setVisibility(View.VISIBLE);
+        }
+        if(part1 == 0) {
+            spStarEmpty2.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private void resetRatingStarVisibility() {
+        spStarFull1.setVisibility(View.INVISIBLE);
+        spStarFull2.setVisibility(View.INVISIBLE);
+        spStarFull3.setVisibility(View.INVISIBLE);
+        spStarFull4.setVisibility(View.INVISIBLE);
+        spStarFull5.setVisibility(View.INVISIBLE);
+
+        spStarHalf1.setVisibility(View.INVISIBLE);
+        spStarHalf2.setVisibility(View.INVISIBLE);
+        spStarHalf3.setVisibility(View.INVISIBLE);
+        spStarHalf4.setVisibility(View.INVISIBLE);
+        spStarHalf5.setVisibility(View.INVISIBLE);
+
+        spStarEmpty1.setVisibility(View.INVISIBLE);
+        spStarEmpty2.setVisibility(View.INVISIBLE);
+        spStarEmpty3.setVisibility(View.INVISIBLE);
+        spStarEmpty4.setVisibility(View.INVISIBLE);
+        spStarEmpty5.setVisibility(View.INVISIBLE);
+    }
+
+
     /**
-     * TODO: complete method.
-     * @param url - full url
+     * @param URL - full url
      * @return simplified url
      */
-    private String getSimplifiedPlaceWebsite(String url) {
-        return url;
+    private String getSimplifiedPlaceWebsite(String URL) {
+        String simplifiedURL = "";
+
+        if(URL != null) {
+            if(!URL.isEmpty()) {
+                String[] URLpart = URL.split("/");
+
+                simplifiedURL = URLpart[0] + "//" + URLpart[1] + URLpart[2] + "/";
+            }
+        }
+
+        simplifiedURL = "No Website Available.";
+        return simplifiedURL;
     }
 
     /**

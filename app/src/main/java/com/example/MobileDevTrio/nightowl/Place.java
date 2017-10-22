@@ -13,6 +13,7 @@ public class Place {
     private String[] types;   // types of a place (ie. restaurant, bar, night_club)
 
     private String type;
+    private String simplifiedType;
 
     // Must make a 2nd url request using placeId to get these specific data
     private String phone;
@@ -29,6 +30,7 @@ public class Place {
         setRating(builder.rating);
         //setTypes(builder.types);
         setSingleType(builder.type);
+        setSimplifiedType(builder.simplifiedType);
     }
 
     @Override
@@ -82,8 +84,16 @@ public class Place {
         return type;
     }
 
+    public String getSimplifiedType() {
+        return simplifiedType;
+    }
+
     public void setSingleType(String type) {
         this.type = type;
+    }
+
+    public void setSimplifiedType(String simplifiedType) {
+        this.simplifiedType = simplifiedType;
     }
 
     public void setTypes(String[] types) {
@@ -132,6 +142,7 @@ public class Place {
         private double rating;
         private String[] types;
         private String type;
+        private String simplifiedType;
 
         public Builder() {
         }
@@ -163,6 +174,11 @@ public class Place {
 
         public Builder type(String val) {
             type = val;
+            return this;
+        }
+
+        public Builder simplifiedType(String val) {
+            simplifiedType = val;
             return this;
         }
 
