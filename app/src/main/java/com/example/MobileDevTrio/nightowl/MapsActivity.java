@@ -15,11 +15,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +49,13 @@ import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
+/**
+ *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
+ *  TODO: add call functionality
+ *  TODO: parse the hours of a place
+ *  TODO: show the hours of a place in location details view
+ *  TODO: add method to check if location services is turned on
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -85,8 +98,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
 
     // Filter Image Buttons
-    boolean filterBtnIsPressed;
-    protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn;
+    protected boolean filterBtnIsPressed;
+    protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn, clearFilterBtn;
 
     // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
@@ -95,11 +108,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     protected boolean appWasPaused;
 
+    // Loading Screen
+    protected RelativeLayout loadingScreenLayout;
+    protected ProgressBar pbRestaurants, pbBars, pbClubs;
+    protected ImageView  checkRestaurants, checkBars, checkClubs;
+
+    //Ratings stars
+    ImageView spStarEmpty1, spStarEmpty2, spStarEmpty3, spStarEmpty4, spStarEmpty5,
+            spStarFull1, spStarFull2, spStarFull3, spStarFull4, spStarFull5,
+            spStarHalf1, spStarHalf2, spStarHalf3, spStarHalf4, spStarHalf5;
+
+
+
+
     // TODO: Determine where to initialize this nearbyPlaces
     private List<Place> placeList, restaurantList, barList, clubList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
-    private GetNearbyPlaces getNearbyPlaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -307,21 +332,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
 
     private void startGettingPlaces() {
+        showLoadingScreen();
         getRestaurants();
         getBars();
         getClubs();
-
     }
 
     private void getRestaurants() {
         Log.d("NightOwl-d", "initial - getPlaces() - Restaurant");
 
-
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "restaurant";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -336,16 +360,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setRestaurantsList(List<Place> restaurantList) {
         this.restaurantList = restaurantList;
         restaurantListReady = true;
+        setRestaurantsCheckMark();
     }
 
     public void getBars() {
         Log.d("NightOwl-d", "initial - getPlaces() - Bars");
 
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "bar";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -360,16 +385,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setBarsList(List<Place> barList) {
         this.barList = barList;
         barListReady = true;
+        setBarsCheckMark();
     }
 
     public void getClubs() {
         Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
 
         Object[] urlParams = new Object[8];
-        //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-        //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-        urlParams[0] = Double.toString(33.9397);    // for emulator
-        urlParams[1] = Double.toString(-84.5197);   // for emulator
+        urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
+        urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
+        //urlParams[0] = Double.toString(33.9397);    // for emulator
+        //urlParams[1] = Double.toString(-84.5197);   // for emulator
         urlParams[2] = "night_club";
         urlParams[3] = PROXIMITY_RADIUS;
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
@@ -384,6 +410,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setClubsList(List<Place> clubList) {
         this.clubList = clubList;
         clubListReady = true;
+        showClubsCheckMark();
     }
 
     /**
@@ -400,7 +427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setNearbyPlacesList();
 
-        createRecyclerList();
+        createRecyclerList(placeList);
 
         // Show the markers on the map
         showNearbyPlaces(restaurantMarkers);
@@ -510,6 +537,109 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
+    /**********************************************************************************************************************************************************
+     **********************************************************************************************************************************************************
+     *                                     LOADING SCREEN
+     */
+
+    private void showLoadingScreen() {
+        setLoadingScreenVisibility();
+
+    }
+
+    /**
+     * TODO: make animation
+     */
+    private void hideLoadingScreen() {
+        Log.d("NightOwl", "Hiding loading screen...");
+        loadingScreenSlideUp();
+        loadingScreenLayout.setVisibility(View.GONE);
+    }
+
+    private void setLoadingScreenVisibility() {
+        loadingScreenLayout.setVisibility(View.VISIBLE);
+
+        pbRestaurants.setVisibility(View.VISIBLE);
+        pbBars.setVisibility(View.VISIBLE);
+        pbClubs.setVisibility(View.VISIBLE);
+
+        checkRestaurants.setVisibility(View.GONE);
+        checkBars.setVisibility(View.GONE);
+        checkClubs.setVisibility(View.GONE);
+    }
+
+    /**
+     * Sets restaurants check mark to VISIBLE
+     */
+    private void setRestaurantsCheckMark() {
+        pbRestaurants.setVisibility(View.GONE);
+        checkRestaurants.setVisibility(View.VISIBLE);
+
+        Animation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(300);
+
+        checkRestaurants.startAnimation(scaleAnimation);
+    }
+
+    /**
+     * Sets bars check mark to VISIBLE
+     */
+    private void setBarsCheckMark() {
+        pbBars.setVisibility(View.GONE);
+        checkBars.setVisibility(View.VISIBLE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(400);
+
+        checkBars.startAnimation(scaleAnimation);
+    }
+
+    /**
+     * Sets clubs check mark to VISIBLE
+     */
+    private void showClubsCheckMark() {
+        pbClubs.setVisibility(View.GONE);
+        checkClubs.setVisibility(View.VISIBLE);
+
+        Animation scaleAnimation = new ScaleAnimation(0.1f, 1f, 0.2f, 1f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(400);
+
+        checkClubs.startAnimation(scaleAnimation);
+
+        scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                hideLoadingScreen();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        //hideLoadingScreen();
+    }
+
+    private void loadingScreenSlideUp() {
+        Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.slide_up);
+
+        loadingScreenLayout.setAnimation(slide_up);
+    }
+
+
+
+
     /**
      * Adds style JSON to map
      */
@@ -548,6 +678,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         barListReady = false;
         clubListReady = false;
 
+        // Loading Screen
+        loadingScreenLayout = findViewById(R.id.loadingScreenLayout);
+        pbRestaurants = findViewById(R.id.loadingRestaurantsProgressBar);
+        pbBars = findViewById(R.id.loadingBarsProgressBar);
+        pbClubs = findViewById(R.id.loadingClubsProgressBar);
+        checkRestaurants = findViewById(R.id.check_restaurants);
+        checkBars = findViewById(R.id.check_bars);
+        checkClubs = findViewById(R.id.check_clubs);
+
+
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
 
@@ -563,6 +703,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn = findViewById(R.id.filterRestaurants);
         filterClubBtn = findViewById(R.id.filterClub);
         filterBarBtn = findViewById(R.id.filterBars);
+        clearFilterBtn = findViewById(R.id.clearFilterBtn);
         filterBtnIsPressed = false;
 
         goBackBtn = findViewById(R.id.goBackImage);
@@ -574,6 +715,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spOpenClosedTV = findViewById(R.id.spOpenClosed);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
+
+        // Rating Stars
+        spStarFull1 = findViewById(R.id.spRatingStarFull1);
+        spStarFull2 = findViewById(R.id.spRatingStarFull2);
+        spStarFull3 = findViewById(R.id.spRatingStarFull3);
+        spStarFull4 = findViewById(R.id.spRatingStarFull4);
+        spStarFull5 = findViewById(R.id.spRatingStarFull5);
+
+        spStarHalf1 = findViewById(R.id.spRatingStarHalf1);
+        spStarHalf2 = findViewById(R.id.spRatingStarHalf2);
+        spStarHalf3 = findViewById(R.id.spRatingStarHalf3);
+        spStarHalf4 = findViewById(R.id.spRatingStarHalf4);
+        spStarHalf5 = findViewById(R.id.spRatingStarHalf5);
+
+        spStarEmpty1 = findViewById(R.id.spRatingStarEmpty1);
+        spStarEmpty2 = findViewById(R.id.spRatingStarEmpty2);
+        spStarEmpty3 = findViewById(R.id.spRatingStarEmpty3);
+        spStarEmpty4 = findViewById(R.id.spRatingStarEmpty4);
+        spStarEmpty5 = findViewById(R.id.spRatingStarEmpty5);
 
         appWasPaused = false;
 
@@ -588,12 +748,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtnListener();
         filterBarBtnListener();
         filterClubBtnListener();
+        clearFilterBtnListener();
         goBackBtnListener();
 
         //initializeListData();
         //createRecyclerList();
 
         darkenMap(0);
+
+        showLoadingScreen();
 
     }
 
@@ -610,11 +773,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     } */
 
-    protected void onPostExecute() {
-        placeList = getNearbyPlaces.getNearbyPlacesList();
-        // movePlacesToVenueList(getNearbyPlaces.getNearbyPlacesList());
-        createRecyclerList();
-    }
+//    protected void onPostExecute() {
+//        placeList = getNearbyPlaces.getNearbyPlacesList();
+//        // movePlacesToVenueList(getNearbyPlaces.getNearbyPlacesList());
+//        createRecyclerList();
+//    }
 
     /*
      * adds data to venueList
@@ -633,28 +796,156 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param sp user-selected place
      */
     private void setSelectedPlaceBottomSheetData(Place sp) {
+        resetRatingStarVisibility();
         spNameTV.setText(sp.getName());
         spRatingTV.setText(Double.toString(sp.getRating()));
-        spTypeTV.setText(sp.getSingleType());
+        setSelectedPlaceRatingStars(Double.toString(sp.getRating()));
+        spTypeTV.setText(sp.getSimplifiedType());
         spAddressTV.setText(sp.getAddress());
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
         //svDescriptionTV.setText(sp.getDescription());
     }
 
+    private void setSelectedPlaceRatingStars(String rating) {
+        int part1 = 0, part2 = 0;
+        if(!rating.isEmpty()) {
+            String[] part = rating.split("\\.");
+            part1 = Integer.parseInt(part[0]);
+            part2 = Integer.parseInt(part[1]);
+        }
+
+        // Set Full Stars
+        if (part1 >= 1) {
+            spStarFull1.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 2) {
+            spStarFull2.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 3) {
+            spStarFull3.setVisibility(View.VISIBLE);
+        }
+        if (part1 >= 4) {
+            spStarFull4.setVisibility(View.VISIBLE);
+        }
+        if (part1 == 5) {
+            spStarFull5.setVisibility(View.VISIBLE);
+        }
+
+
+        // Set Initial Empty/Half/Full Stars
+        if(part1 == 0) {
+            if(part2 < 3) {
+                spStarEmpty1.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf1.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull1.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 1) {
+            spStarFull1.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty2.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf2.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull2.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 2) {
+            spStarFull2.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty3.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf3.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull3.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 3) {
+            spStarFull3.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty4.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf4.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull4.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 4) {
+            spStarFull4.setVisibility(View.VISIBLE);
+            if(part2 < 3) {
+                spStarEmpty5.setVisibility(View.VISIBLE);       // set first empty star
+            } else if (part2 >= 3 && part2 <= 7) {
+                spStarHalf5.setVisibility(View.VISIBLE);        // set half star
+            } else if (part2 > 7) {
+                spStarFull5.setVisibility(View.VISIBLE);        // set next full star
+            }
+        }
+        if (part1 == 5) {
+            spStarFull5.setVisibility(View.VISIBLE);
+        }
+
+        // Set Remaining Empty Stars
+        if(part1 <= 3) {
+            spStarEmpty5.setVisibility(View.VISIBLE);
+        }
+        if(part1 <= 2) {
+            spStarEmpty4.setVisibility(View.VISIBLE);
+        }
+        if(part1 <= 1) {
+            spStarEmpty3.setVisibility(View.VISIBLE);
+        }
+        if(part1 == 0) {
+            spStarEmpty2.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private void resetRatingStarVisibility() {
+        spStarFull1.setVisibility(View.INVISIBLE);
+        spStarFull2.setVisibility(View.INVISIBLE);
+        spStarFull3.setVisibility(View.INVISIBLE);
+        spStarFull4.setVisibility(View.INVISIBLE);
+        spStarFull5.setVisibility(View.INVISIBLE);
+
+        spStarHalf1.setVisibility(View.INVISIBLE);
+        spStarHalf2.setVisibility(View.INVISIBLE);
+        spStarHalf3.setVisibility(View.INVISIBLE);
+        spStarHalf4.setVisibility(View.INVISIBLE);
+        spStarHalf5.setVisibility(View.INVISIBLE);
+
+        spStarEmpty1.setVisibility(View.INVISIBLE);
+        spStarEmpty2.setVisibility(View.INVISIBLE);
+        spStarEmpty3.setVisibility(View.INVISIBLE);
+        spStarEmpty4.setVisibility(View.INVISIBLE);
+        spStarEmpty5.setVisibility(View.INVISIBLE);
+    }
+
+
     /**
-     * TODO: complete method.
-     * @param url - full url
+     * @param URL - full url
      * @return simplified url
      */
-    private String getSimplifiedPlaceWebsite(String url) {
-        return url;
+    private String getSimplifiedPlaceWebsite(String URL) {
+        String simplifiedURL = "No Website Available.";
+
+        if(URL != null) {
+            if(!URL.isEmpty()) {
+                String[] URLpart = URL.split("/");
+
+                simplifiedURL = URLpart[0] + "//" + URLpart[1] + URLpart[2] + "/";
+            }
+        }
+
+        return simplifiedURL;
     }
 
     /**
      * creates RecyclerView
      */
-    private void createRecyclerList() {
+    private void createRecyclerList(List<Place> placeList) {
         String a = "size: " + placeList.size() + "";
 
         Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
@@ -695,7 +986,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
     /**
      * BottomSheet Listener
      */
@@ -714,6 +1004,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     filterRestaurantsBtn.setTranslationX(1);
                     filterBarBtn.setTranslationX(1);
                     filterClubBtn.setTranslationX(1);
+                    clearFilterBtn.setTranslationX(1);
 
                 } else if (newState == STATE_COLLAPSED) {
                     filterBtnIsPressed = false;
@@ -732,9 +1023,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (filterBtnIsPressed) {
                         showFilterButtons();
 
-                        filterRestaurantsBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
-                        filterBarBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
-                        filterClubBtn.setTranslationX(1700 * ((slideOffset - 2) * (-1)) - 1700);
+                        filterRestaurantsBtn.setTranslationX(2200 * ((slideOffset - 2) * (-1)) - 2200);
+                        filterBarBtn.setTranslationX(2000 * ((slideOffset - 2) * (-1)) - 2000);
+                        filterClubBtn.setTranslationX(1800 * ((slideOffset - 2) * (-1)) - 1800);
+                        clearFilterBtn.setTranslationX(-2000 * ((slideOffset - 2) * (-1)) + 2000);
 
                         // Darken Map
                         darkenMap((int) (400 * (slideOffset + 1) - 700));
@@ -820,16 +1112,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn.setVisibility(View.VISIBLE);
         filterClubBtn.setVisibility(View.VISIBLE);
         filterBarBtn.setVisibility(View.VISIBLE);
+        clearFilterBtn.setVisibility(View.VISIBLE);
     }
 
     private void hideFilterButtons() {
         filterRestaurantsBtn.setVisibility(View.INVISIBLE);
         filterClubBtn.setVisibility(View.INVISIBLE);
         filterBarBtn.setVisibility(View.INVISIBLE);
+        clearFilterBtn.setVisibility(View.INVISIBLE);
     }
 
     /**
-     *
+     *  Shows only restaurant locations on the map
      */
     private void filterRestaurantsBtnListener() {
         filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
@@ -839,27 +1133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(restaurantMarkers);
-//                for (MarkerOptions marker : barMarkers) {
-//                    marker.visible(false);
-//                }
-//
-//                for (MarkerOptions marker : clubMarkers) {
-//                    marker.visible(false);
-//                }
-//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
-//
-//                mMap.clear();
-//                Object[] urlParams = new Object[8];
-//                urlParams[0] = Double.toString(33.9397);    // for emulator
-//                urlParams[1] = Double.toString(-84.5197);   // for emulator
-//                urlParams[2] = "restaurant";
-//                urlParams[3] = PROXIMITY_RADIUS;
-//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-//                urlParams[5] = null;
-//                urlParams[6] = null;
-//                urlParams[7] = mMap;
-//
-//                getNearbyPlaces.execute(urlParams);
+                createRecyclerList(restaurantList);
             }
         });
     }
@@ -875,23 +1149,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(barMarkers);
-//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
-//
-//                mMap.clear();
-//                Object[] urlParams = new Object[8];
-//                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-//                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-//                urlParams[0] = Double.toString(33.9397);    // for emulator
-//                urlParams[1] = Double.toString(-84.5197);   // for emulator
-//                urlParams[2] = "bar";
-//                urlParams[3] = PROXIMITY_RADIUS;
-//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-//                urlParams[5] = null;
-//                urlParams[6] = null;
-//                urlParams[7] = mMap;
-//
-//                getNearbyPlaces.execute(urlParams);
-
+                createRecyclerList(barList);
             }
         });
     }
@@ -907,22 +1165,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mMap.clear();
                 showNearbyPlaces(clubMarkers);
-//                getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
-//
-//                mMap.clear();
-//                Object[] urlParams = new Object[8];
-//                //urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
-//                //urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
-//                urlParams[0] = Double.toString(33.9397);    // for emulator
-//                urlParams[1] = Double.toString(-84.5197);   // for emulator
-//                urlParams[2] = "night_club";
-//                urlParams[3] = PROXIMITY_RADIUS;
-//                urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
-//                urlParams[5] = null;
-//                urlParams[6] = null;
-//                urlParams[7] = mMap;
-//
-//                getNearbyPlaces.execute(urlParams);
+                createRecyclerList(clubList);
+            }
+        });
+    }
+
+    /**
+     *
+     */
+    private void clearFilterBtnListener() {
+        clearFilterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                showNearbyPlaces(restaurantMarkers);
+                showNearbyPlaces(barMarkers);
+                showNearbyPlaces(clubMarkers);
+                createRecyclerList(placeList);
             }
         });
     }

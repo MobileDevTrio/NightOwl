@@ -22,6 +22,11 @@
     <string name="uber_here">Take an Uber!</string>
     <string name="place_URL">placewebsite.com</string>
 
+    <string name="loading">Loading&#8230;</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="clubs">Night Clubs</string>
+    <string name="bars">Bars</string>
+
 
     <string name="sample_description">Description Description Description Description Description Description
     Description Description Description Description Description Description  </string>

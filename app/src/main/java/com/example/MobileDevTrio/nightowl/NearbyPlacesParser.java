@@ -87,10 +87,13 @@ public class NearbyPlacesParser extends Parser {
 
         switch(placeType) {
             case RESTAURANT: place.setSingleType("restaurant");
+                place.setSimplifiedType("Restauant");
                 break;
             case BAR: place.setSingleType("bar");
+                place.setSimplifiedType("Bar");
                 break;
             case CLUB: place.setSingleType("night_club");
+                place.setSimplifiedType("Night Club");
                 break;
         }
 

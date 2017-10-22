@@ -7,7 +7,7 @@
     tools:context="com.example.MobileDevTrio.nightowl.MapsActivity">
 
 
-    <FrameLayout
+        <FrameLayout
         android:id="@+id/mapLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,6 +61,28 @@
                 android:src="@drawable/ic_back" />
 
         </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="60dp"
+            app:layout_anchor="@+id/bottomSheetLayout"
+            app:layout_anchorGravity="top|start">
+
+
+            <ImageView
+                android:id="@+id/clearFilterBtn"
+                android:layout_width="110dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:visibility="invisible"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_clear_filter" />
+
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -127,10 +149,172 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/loadingScreenLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC1c1c1c"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+
+            <TextView
+                android:id="@+id/loadingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="70dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/loading"
+                android:text="@string/loading"
+                />
+
+            <LinearLayout
+                android:id="@+id/loadingRestaurantsLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/loadingText"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <RelativeLayout
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/check_restaurants"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_check_restaurant"/>
+
+                    <ProgressBar
+                        android:id="@+id/loadingRestaurantsProgressBar"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/circular_progress_bar"/>
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/loadingRestaurantsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:textColor="@color/restaurants"
+                    android:text="@string/restaurants"/>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/loadingBarsLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/loadingRestaurantsLayout"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <RelativeLayout
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/check_bars"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_check_bar"/>
+
+                    <ProgressBar
+                        android:id="@+id/loadingBarsProgressBar"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/circular_progress_bar"/>
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/loadingBarsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:textColor="@color/restaurants"
+                    android:text="@string/bars"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loadingClubsLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/loadingBarsLayout"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <RelativeLayout
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/check_clubs"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_check_club"/>
+
+                    <ProgressBar
+                        android:id="@+id/loadingClubsProgressBar"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/circular_progress_bar"/>
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/loadingClubsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="20sp"
+                    android:textColor="@color/restaurants"
+                    android:text="@string/clubs"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
-
-
 
 
 

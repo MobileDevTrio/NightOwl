@@ -23,5 +23,11 @@
     <color name="placeBottomSheetBackground">#282828</color>
     <color name="placeBottomSheetTitleBar">#16668c</color>
 
+    <!-- TYPES COLORS -->
+    <color name="loading">#cccccc</color>
+    <color name="restaurants">#cccccc</color>
+    <color name="clubs">#cccccc</color>
+    <color name="bars">#cccccc</color>
+
 
 </resources>

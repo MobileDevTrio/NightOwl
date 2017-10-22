@@ -62,7 +62,7 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
             Pair<String, List<Place>> pair = new NearbyPlacesParser(buildURL(objects), placeType).parseNearbyPlaces();
             nearbyPlacesList.addAll(pair.second);
 
-            Thread.sleep(200);
+            Thread.sleep(1);
 
             /* check for 20-40 results
             if (pair.first != null) {
@@ -151,32 +151,7 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
         stringBuilder.append("&").append(PARAM_OPENNOW);
         stringBuilder.append("&").append(PARAM_RADIUS).append(radius);
 
+        //System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
-    }
-
-    private void showNearbyPlaces(List<Place> nearbyPlacesList) {
-
-        if (nearbyPlacesList != null) {
-            for (int i = 0; i < nearbyPlacesList.size(); i++) {
-                MarkerOptions markerOptions = new MarkerOptions();
-                Place googlePlace = nearbyPlacesList.get(i);
-
-                String placeName = googlePlace.getName();
-                String phone = googlePlace.getPhone();
-                String address = googlePlace.getAddress();
-                String website = googlePlace.getWebsite();
-
-                double latitude = googlePlace.getLatitude();
-                double longitude = googlePlace.getLongitude();
-
-                LatLng latLng = new LatLng(latitude, longitude);
-                markerOptions
-                        .position(latLng)
-                        .title(placeName + " : " + website);
-
-                mMap.addMarker(markerOptions);
-
-            }
-        }
     }
 }
