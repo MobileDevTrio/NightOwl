@@ -26,8 +26,6 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
     private List<Place> nearbyPlacesList = new ArrayList<>();
 
-    private GoogleMap mMap;
-
     private Context context;
 
     private PlaceType placeType;
@@ -38,7 +36,6 @@ public class GetNearbyPlaces extends AsyncTask<Object, Void, List<Place>> {
 
     @Override
     protected List<Place> doInBackground(Object... objects) {
-        mMap = (GoogleMap) objects[7];
 
         Log.d("NightOwl:", " doInBackground() is running...");
 

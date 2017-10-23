@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -37,7 +36,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -52,7 +50,6 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 /**
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add call functionality
- *  TODO: parse the hours of a place
  *  TODO: show the hours of a place in location details view
  *  TODO: add method to check if location services is turned on
  */
@@ -68,7 +65,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int PROXIMITY_RADIUS = 1600 * 4;  // 4 mile radius
-    private static final float DEFAULT_ZOOM = 11.5f;
+    private static final double LATITUDE_OFFSET = 0.05;
+    private static final float DEFAULT_ZOOM = 11.8f;
 
     // Entry points for Google Places API
     protected GeoDataClient mGeoDataClient;
@@ -103,7 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
-    protected TextView  spNameTV, spRatingTV, spTypeTV, /*spDescriptionTV,*/ spAddressTV, spOpenClosedTV,
+    protected TextView  spNameTV, spRatingTV, spTypeTV, spAddressTV, spOpenClosedTV, spClosingTimeTV,
                         spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
@@ -119,9 +117,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             spStarHalf1, spStarHalf2, spStarHalf3, spStarHalf4, spStarHalf5;
 
 
-
-
-    // TODO: Determine where to initialize this nearbyPlaces
     private List<Place> placeList, restaurantList, barList, clubList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
@@ -285,7 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if (mLastKnownLocation != null) {
 
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                        new LatLng(mLastKnownLocation.getLatitude() - LATITUDE_OFFSET,
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
                                 /*******************************************************************
@@ -341,7 +336,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getRestaurants() {
         Log.d("NightOwl-d", "initial - getPlaces() - Restaurant");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -351,7 +346,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
@@ -366,7 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void getBars() {
         Log.d("NightOwl-d", "initial - getPlaces() - Bars");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -376,7 +370,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
@@ -391,7 +384,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void getClubs() {
         Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -401,7 +394,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
@@ -494,7 +486,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      *  Creates a MarkerOption for a place and stores it in a List, according to the place type
-     * @param places
+     * @param places List of nearby places
      */
     private void sortPlaceMarkersIntoList(List<Place> places) {
 
@@ -545,7 +537,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void showLoadingScreen() {
         setLoadingScreenVisibility();
-
     }
 
     /**
@@ -710,9 +701,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spNameTV = findViewById(R.id.spName);
         spRatingTV = findViewById(R.id.spRating);
         spTypeTV = findViewById(R.id.spType);
-        //spDescriptionTV = findViewById(R.id.spDescription);
         spAddressTV = findViewById(R.id.spAddress);
         spOpenClosedTV = findViewById(R.id.spOpenClosed);
+        spClosingTimeTV = findViewById(R.id.spClosingTime);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
 
@@ -802,9 +793,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setSelectedPlaceRatingStars(Double.toString(sp.getRating()));
         spTypeTV.setText(sp.getSimplifiedType());
         spAddressTV.setText(sp.getAddress());
+        spClosingTimeTV.setText(getClosingTimeString(sp));
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
-        //svDescriptionTV.setText(sp.getDescription());
+    }
+
+    private String getClosingTimeString(Place place) {
+        String closingTimeString = "";
+        String closingTime = place.getClosingHours();
+        boolean isOpen247 = place.isOpen247();
+
+        if (isOpen247) {
+            closingTimeString = "Open 24 Hours";
+        }
+        else if (closingTime != null) {
+            if (!closingTime.isEmpty()) {
+                String[] hours = closingTime.split(":");
+                String[] minAMPM = hours[1].split(" ");
+                String part1 = hours[0];
+                String part2 = minAMPM[0];
+                String part3 = minAMPM[1];
+
+                // checks if beginning character is '0' and removes it.
+                if (part1.charAt(0) == '0') {
+                    part1 = part1.charAt(1) + "";
+                }
+
+                //
+                if (part2.charAt(0) == '0' && part2.charAt(1) == '0') {
+                    closingTimeString = "Close " + part1 + " " + part3;
+                } else {
+                    closingTimeString = "Close " + part1 + ":" + part2 + " " + part3;
+                }
+
+
+            }
+        }
+
+        return closingTimeString;
     }
 
     private void setSelectedPlaceRatingStars(String rating) {
