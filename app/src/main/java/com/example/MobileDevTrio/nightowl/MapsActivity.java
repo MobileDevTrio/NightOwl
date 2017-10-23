@@ -65,7 +65,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int PROXIMITY_RADIUS = 1600 * 4;  // 4 mile radius
-    private static final float DEFAULT_ZOOM = 11.5f;
+    private static final double LATITUDE_OFFSET = 0.05;
+    private static final float DEFAULT_ZOOM = 11.8f;
 
     // Entry points for Google Places API
     protected GeoDataClient mGeoDataClient;
@@ -279,7 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if (mLastKnownLocation != null) {
 
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                        new LatLng(mLastKnownLocation.getLatitude() - LATITUDE_OFFSET,
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
                                 /*******************************************************************
@@ -335,7 +336,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getRestaurants() {
         Log.d("NightOwl-d", "initial - getPlaces() - Restaurant");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -345,7 +346,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
@@ -360,7 +360,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void getBars() {
         Log.d("NightOwl-d", "initial - getPlaces() - Bars");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -370,7 +370,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
@@ -385,7 +384,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void getClubs() {
         Log.d("NightOwl-d", "initial - getPlaces() - Clubs");
 
-        Object[] urlParams = new Object[8];
+        Object[] urlParams = new Object[7];
         urlParams[0] = Double.toString(mLastKnownLocation.getLatitude());
         urlParams[1] = Double.toString(mLastKnownLocation.getLongitude());
         //urlParams[0] = Double.toString(33.9397);    // for emulator
@@ -395,7 +394,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         urlParams[4] = getResources().getString(R.string.google_places_web_service_key);
         urlParams[5] = null;
         urlParams[6] = null;
-        urlParams[7] = mMap;
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(MapsActivity.this);
         getNearbyPlaces.execute(urlParams);
