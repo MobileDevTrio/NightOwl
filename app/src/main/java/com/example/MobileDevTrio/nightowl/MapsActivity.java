@@ -52,7 +52,6 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 /**
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add call functionality
- *  TODO: parse the hours of a place
  *  TODO: show the hours of a place in location details view
  *  TODO: add method to check if location services is turned on
  */
@@ -119,9 +118,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             spStarHalf1, spStarHalf2, spStarHalf3, spStarHalf4, spStarHalf5;
 
 
-
-
-    // TODO: Determine where to initialize this nearbyPlaces
     private List<Place> placeList, restaurantList, barList, clubList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
@@ -494,7 +490,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      *  Creates a MarkerOption for a place and stores it in a List, according to the place type
-     * @param places
+     * @param places List of nearby places
      */
     private void sortPlaceMarkersIntoList(List<Place> places) {
 

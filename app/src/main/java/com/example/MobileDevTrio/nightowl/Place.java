@@ -19,6 +19,9 @@ public class Place {
     private String phone;
     private String website;
     private String address;
+    private boolean open247;
+    private String closingHours;
+    private String[] weeklyHours;
 
     public Place() {
     }
@@ -31,6 +34,7 @@ public class Place {
         //setTypes(builder.types);
         setSingleType(builder.type);
         setSimplifiedType(builder.simplifiedType);
+        closingHours = "";
     }
 
     @Override
@@ -66,6 +70,14 @@ public class Place {
 
     public void setLocation(LatLng location) {
         this.location = location;
+    }
+
+    public double getLatitude(){
+        return location.latitude;
+    }
+
+    public double getLongitude(){
+        return location.longitude;
     }
 
     public double getRating() {
@@ -124,12 +136,28 @@ public class Place {
         this.website = website;
     }
 
-    public double getLatitude(){
-        return location.latitude;
+    public boolean isOpen247() {
+        return open247;
     }
 
-    public double getLongitude(){
-        return location.longitude;
+    public void setOpen247(boolean open247) {
+        this.open247 = open247;
+    }
+
+    public String getClosingHours() {
+        return closingHours;
+    }
+
+    public void setClosingHours(String closingHours) {
+        this.closingHours = closingHours;
+    }
+
+    public String[] getWeeklyHours() {
+        return weeklyHours;
+    }
+
+    public void setWeeklyHours(String[] weeklyHours) {
+        this.weeklyHours = weeklyHours;
     }
 
     /**
