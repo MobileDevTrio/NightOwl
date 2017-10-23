@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -100,7 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn, clearFilterBtn;
 
     // SelectedPlaceBottomSheet Views
-    protected ImageView goBackBtn;
+    protected ImageView goBackBtn, phoneIcon1, phoneIcon2;
     protected TextView  spNameTV, spRatingTV, spTypeTV, spAddressTV, spOpenClosedTV, spClosingTimeTV,
                         spPhoneNumTV, spURLTV;
 
@@ -706,6 +707,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spClosingTimeTV = findViewById(R.id.spClosingTime);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
+        phoneIcon1 = findViewById(R.id.selectedPlacePhoneIcon1);
+        phoneIcon2 = findViewById(R.id.selectedPlacePhoneIcon2);
 
         // Rating Stars
         spStarFull1 = findViewById(R.id.spRatingStarFull1);
@@ -786,7 +789,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * loads selected place data onto selectedPlaceBottomSheet
      * @param sp user-selected place
      */
-    private void setSelectedPlaceBottomSheetData(Place sp) {
+    private void setSelectedPlaceBottomSheetData(final Place sp) {
         resetRatingStarVisibility();
         spNameTV.setText(sp.getName());
         spRatingTV.setText(Double.toString(sp.getRating()));
@@ -796,7 +799,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spClosingTimeTV.setText(getClosingTimeString(sp));
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
+        //=========================================phone button functionality===================================================================
+        phoneIcon1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri number = Uri.parse("tel:"+sp.getPhone());
+                Intent intent = new Intent(Intent.ACTION_DIAL, number);
+                startActivity(intent);
+            }
+        });
+        phoneIcon2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri number = Uri.parse("tel:"+sp.getPhone());
+                Intent intent = new Intent(Intent.ACTION_DIAL, number);
+                startActivity(intent);
+            }
+        });
     }
+
 
     private String getClosingTimeString(Place place) {
         String closingTimeString = "";
