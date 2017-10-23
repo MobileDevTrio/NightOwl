@@ -43,6 +43,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.placeRating.setText(Double.toString(placeList.get(i).getRating()));
         holder.resetRatingStarVisibility();
         holder.setSelectedPlaceRatingStars(Double.toString(placeList.get(i).getRating()));
+        holder.closingTime.setText(holder.getClosingTimeString(placeList.get(i)));
     }
 
     @Override
@@ -58,6 +59,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         TextView placeType;
         TextView placeAddress;
         TextView placeRating;
+        TextView closingTime;
         //Ratings stars
         ImageView placeStarEmpty1, placeStarEmpty2, placeStarEmpty3, placeStarEmpty4, placeStarEmpty5,
                 placeStarFull1, placeStarFull2, placeStarFull3, placeStarFull4, placeStarFull5,
@@ -77,6 +79,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             placeType = itemView.findViewById(R.id.placeType);
             placeAddress = itemView.findViewById(R.id.placeAddress);
             placeRating = itemView.findViewById(R.id.placeRating);
+            closingTime = itemView.findViewById(R.id.placeClosingTime);
 
             // Rating Stars
             placeStarFull1 = itemView.findViewById(R.id.placeRatingStarFull1);
@@ -103,6 +106,41 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public void onClick(View v) {
             Place place = this.placeList1.get(getAdapterPosition());
             ((MapsActivity) context).cardViewClicked(place);
+        }
+
+        private String getClosingTimeString(Place place) {
+            String closingTimeString = "";
+            String closingTime = place.getClosingHours();
+            boolean isOpen247 = place.isOpen247();
+
+            if (isOpen247) {
+                closingTimeString = "Open 24 Hours";
+            }
+            else if (closingTime != null) {
+                if (!closingTime.isEmpty()) {
+                    String[] hours = closingTime.split(":");
+                    String[] minAMPM = hours[1].split(" ");
+                    String part1 = hours[0];
+                    String part2 = minAMPM[0];
+                    String part3 = minAMPM[1];
+
+                    // checks if beginning character is '0' and removes it.
+                    if (part1.charAt(0) == '0') {
+                        part1 = part1.charAt(1) + "";
+                    }
+
+                    //
+                    if (part2.charAt(0) == '0' && part2.charAt(1) == '0') {
+                        closingTimeString = "Close " + part1 + " " + part3;
+                    } else {
+                        closingTimeString = "Close " + part1 + ":" + part2 + " " + part3;
+                    }
+
+
+                }
+            }
+
+            return closingTimeString;
         }
 
         private void resetRatingStarVisibility() {

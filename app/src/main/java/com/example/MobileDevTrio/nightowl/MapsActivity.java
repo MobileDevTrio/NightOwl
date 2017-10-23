@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -37,7 +36,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -102,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // SelectedPlaceBottomSheet Views
     protected ImageView goBackBtn;
-    protected TextView  spNameTV, spRatingTV, spTypeTV, /*spDescriptionTV,*/ spAddressTV, spOpenClosedTV,
+    protected TextView  spNameTV, spRatingTV, spTypeTV, spAddressTV, spOpenClosedTV, spClosingTimeTV,
                         spPhoneNumTV, spURLTV;
 
     protected boolean appWasPaused;
@@ -541,7 +539,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void showLoadingScreen() {
         setLoadingScreenVisibility();
-
     }
 
     /**
@@ -706,9 +703,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spNameTV = findViewById(R.id.spName);
         spRatingTV = findViewById(R.id.spRating);
         spTypeTV = findViewById(R.id.spType);
-        //spDescriptionTV = findViewById(R.id.spDescription);
         spAddressTV = findViewById(R.id.spAddress);
         spOpenClosedTV = findViewById(R.id.spOpenClosed);
+        spClosingTimeTV = findViewById(R.id.spClosingTime);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
 
@@ -798,9 +795,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setSelectedPlaceRatingStars(Double.toString(sp.getRating()));
         spTypeTV.setText(sp.getSimplifiedType());
         spAddressTV.setText(sp.getAddress());
+        spClosingTimeTV.setText(getClosingTimeString(sp));
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
-        //svDescriptionTV.setText(sp.getDescription());
+    }
+
+    private String getClosingTimeString(Place place) {
+        String closingTimeString = "";
+        String closingTime = place.getClosingHours();
+        boolean isOpen247 = place.isOpen247();
+
+        if (isOpen247) {
+            closingTimeString = "Open 24 Hours";
+        }
+        else if (closingTime != null) {
+            if (!closingTime.isEmpty()) {
+                String[] hours = closingTime.split(":");
+                String[] minAMPM = hours[1].split(" ");
+                String part1 = hours[0];
+                String part2 = minAMPM[0];
+                String part3 = minAMPM[1];
+
+                // checks if beginning character is '0' and removes it.
+                if (part1.charAt(0) == '0') {
+                    part1 = part1.charAt(1) + "";
+                }
+
+                //
+                if (part2.charAt(0) == '0' && part2.charAt(1) == '0') {
+                    closingTimeString = "Close " + part1 + " " + part3;
+                } else {
+                    closingTimeString = "Close " + part1 + ":" + part2 + " " + part3;
+                }
+
+
+            }
+        }
+
+        return closingTimeString;
     }
 
     private void setSelectedPlaceRatingStars(String rating) {
