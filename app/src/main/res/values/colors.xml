@@ -29,5 +29,12 @@
     <color name="clubs">#cccccc</color>
     <color name="bars">#cccccc</color>
 
+    <!-- RIDE SHARE COLORS -->
+    <color name="uberBackground">#000000</color>
+    <color name="lyftBackground">#3b1082</color>
+
+    <color name="favoriteUnselectedBackground">#212121</color>
+    <color name="favoriteSelectedBackground">#aa8406</color>
+
 
 </resources>
