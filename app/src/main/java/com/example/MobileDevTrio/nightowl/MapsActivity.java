@@ -46,12 +46,11 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
+import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
 /**
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
- *  TODO: add call functionality
- *  TODO: show the hours of a place in location details view
  *  TODO: add method to check if location services is turned on
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -95,13 +94,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // BottomSheet Behavior
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
+    protected boolean allowBottomSheet1Dragging;
 
     // Filter Image Buttons
     protected boolean filterBtnIsPressed;
     protected ImageView filterImageBtn, filterRestaurantsBtn, filterClubBtn, filterBarBtn, clearFilterBtn;
 
     // SelectedPlaceBottomSheet Views
-    protected ImageView goBackBtn, phoneIcon1, phoneIcon2;
+    protected ImageView goBackBtn, phoneIcon1;
+    protected LinearLayout spUberLayout, spLyftLayout, spFavoritesLayout, phoneLayout2, spURLlayout;
     protected TextView  spNameTV, spRatingTV, spTypeTV, spAddressTV, spOpenClosedTV, spClosingTimeTV,
                         spPhoneNumTV, spURLTV;
 
@@ -152,7 +153,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
         if(appWasPaused) {
-            Toast.makeText(getApplicationContext(), "onResume()", Toast.LENGTH_LONG).show();
             /*try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -682,6 +682,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
+        allowBottomSheet1Dragging = true;
 
         tabNearYouLayout = findViewById(R.id.tabNearYou);
         tabFavoritesLayout = findViewById(R.id.tabFavorites);
@@ -702,13 +703,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spNameTV = findViewById(R.id.spName);
         spRatingTV = findViewById(R.id.spRating);
         spTypeTV = findViewById(R.id.spType);
+        spUberLayout = findViewById(R.id.uberLayout);
+        spLyftLayout = findViewById(R.id.lyftLayout);
+        spFavoritesLayout = findViewById(R.id.favoritesLayout);
         spAddressTV = findViewById(R.id.spAddress);
         spOpenClosedTV = findViewById(R.id.spOpenClosed);
         spClosingTimeTV = findViewById(R.id.spClosingTime);
         spPhoneNumTV = findViewById(R.id.spPhoneNumber);
         spURLTV = findViewById(R.id.spURL);
         phoneIcon1 = findViewById(R.id.selectedPlacePhoneIcon1);
-        phoneIcon2 = findViewById(R.id.selectedPlacePhoneIcon2);
+        phoneLayout2 = findViewById(R.id.spPhoneLayout);
+        spURLlayout = findViewById(R.id.spURLLayout);
 
         // Rating Stars
         spStarFull1 = findViewById(R.id.spRatingStarFull1);
@@ -784,12 +789,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     } */
 
-    /**11
-     * TODO: set all place details...
+    /**
      * loads selected place data onto selectedPlaceBottomSheet
      * @param sp user-selected place
      */
-    private void setSelectedPlaceBottomSheetData(final Place sp) {
+    private void setSelectedPlaceBottomSheetData(Place sp) {
         resetRatingStarVisibility();
         spNameTV.setText(sp.getName());
         spRatingTV.setText(Double.toString(sp.getRating()));
@@ -799,25 +803,97 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spClosingTimeTV.setText(getClosingTimeString(sp));
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
-        //=========================================phone button functionality===================================================================
+
+        //================= Selected Place Listeners =========================================================
+        setPhoneOnClickListeners(sp);
+        setURLLayoutOnClickListener(sp);
+        setUberOnClickListener(sp);
+        setLyftOnClickListener(sp);
+        setFavoritesOnClickListener(sp);
+    }
+
+    /**
+     * Phone buttons functionality
+     * @param place - user-selected place
+     */
+    private void setPhoneOnClickListeners(final Place place) {
         phoneIcon1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri number = Uri.parse("tel:"+sp.getPhone());
+                Uri number = Uri.parse("tel:"+place.getPhone());
                 Intent intent = new Intent(Intent.ACTION_DIAL, number);
                 startActivity(intent);
             }
         });
-        phoneIcon2.setOnClickListener(new View.OnClickListener() {
+        phoneLayout2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri number = Uri.parse("tel:"+sp.getPhone());
+                Uri number = Uri.parse("tel:"+place.getPhone());
                 Intent intent = new Intent(Intent.ACTION_DIAL, number);
                 startActivity(intent);
             }
         });
     }
 
+    /**
+     * URL / website functionality
+     * @param place - user-selected place
+     */
+    private void setURLLayoutOnClickListener(final Place place) {
+        spURLlayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String fullURL = place.getWebsite();
+
+                if (fullURL != null) {
+                    if (!fullURL.isEmpty()) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(fullURL));
+                        startActivity(i);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * TODO: add functionality
+     * @param place - user-selected place
+     */
+    private void setUberOnClickListener(Place place) {
+        spUberLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
+    /**
+     * TODO: add functionality
+     * @param place - user-selected place
+     */
+    private void setLyftOnClickListener(Place place) {
+        spLyftLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+    }
+
+    /**
+     * TODO: add functionality
+     * @param place - user-selected place
+     */
+    private void setFavoritesOnClickListener(Place place) {
+        spFavoritesLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
+            }
+        });
+    }
 
     private String getClosingTimeString(Place place) {
         String closingTimeString = "";
@@ -1016,6 +1092,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setSelectedPlaceBottomSheetData(selectedPlace);
 
         bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses Place List BottomSheet
+        allowBottomSheet1Dragging = false;
 
         bottomSheetBehavior2.setState(STATE_EXPANDED); // expands selected Place BottomSheet
     }
@@ -1026,6 +1103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View view) {
                 bottomSheetBehavior2.setState(STATE_COLLAPSED); // collapses selected Place BottomSheet
 
+                allowBottomSheet1Dragging = true;
                 bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
             }
         });
@@ -1042,7 +1120,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomSheetBehavior1.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == STATE_EXPANDED) {
+                if (newState == STATE_DRAGGING && !allowBottomSheet1Dragging) {
+                    bottomSheetBehavior1.setState(STATE_COLLAPSED);
+                } else if (newState == STATE_EXPANDED) {
                     filterImageBtn.setVisibility(View.VISIBLE);
                     filterImageBtn.setScaleX(1);
                     filterImageBtn.setScaleY(1);
@@ -1111,6 +1191,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     goBackBtn.setScaleX(1);
                     goBackBtn.setScaleY(1);
 
+                } else if (newState == STATE_COLLAPSED) {
+                    allowBottomSheet1Dragging = true;
                 }
             }
 
