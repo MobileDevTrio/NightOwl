@@ -282,7 +282,6 @@
 
         </RelativeLayout>
 
-
     </LinearLayout>
 
     <ScrollView
@@ -302,21 +301,85 @@
             android:paddingEnd="10dp">
 
             <LinearLayout
-                android:id="@+id/spDescriptionLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="76dp"
+                android:orientation="horizontal"
                 android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:paddingBottom="8dp"
+                android:weightSum="5">
 
-                <TextView
-                    android:id="@+id/spDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="15sp"
-                    android:textColor="@color/placeDetails"
-                    android:text="@string/sample_description"/>
+                <LinearLayout
+                    android:id="@+id/uberLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="2"
+                    android:weightSum="6"
+                    android:background="@color/uberBackground" >
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:src="@drawable/ic_uber_logo" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lyftLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="2"
+                    android:weightSum="7"
+                    android:background="@color/lyftBackground">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:src="@drawable/ic_lyft_logo" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/favoritesLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:weightSum="5"
+                    android:background="@color/favoriteUnselectedBackground">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="3"
+                        android:src="@drawable/ic_star" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
