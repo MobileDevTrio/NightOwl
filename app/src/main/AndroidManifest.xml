@@ -11,14 +11,14 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <!--android:icon="@mipmap/ic_launcher"-->
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="com.orm.SugarApp">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -31,6 +31,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_places_key" />
+        <meta-data android:name="DATABASE" android:value="nightowl_sugar.db" />
+        <meta-data android:name="VERSION" android:value="1" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.example.MobileDevTrio.nightowl" />
 
         <activity
             android:name="com.example.MobileDevTrio.nightowl.MapsActivity"
