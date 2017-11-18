@@ -475,6 +475,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             placeList.add(clubList.get(i));
         }
 
+        // Remove duplicates from placeList
+        for (int i = 0; i < placeList.size(); i++) {
+
+            for (int j = i + 1; j < placeList.size(); j++) {
+
+                if (placeList.get(i).getPlaceId().equals(placeList.get(j).getPlaceId())) {
+                    placeList.remove(j);
+                    j--;
+                }
+            }
+
+        }
+
 
         // Initialize the place markers list
         restaurantMarkers = new ArrayList<>();
