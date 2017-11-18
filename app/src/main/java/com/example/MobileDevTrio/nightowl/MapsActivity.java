@@ -50,6 +50,8 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
 /**
+ *  TODO: add check for network. If network is not available, app force-closes.
+ *  TODO: a location can be listed multiple times if it is more than one 'type'.
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add method to check if location services is turned on
  */
