@@ -44,10 +44,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
+
+import com.lyft.lyftbutton.LyftButton;
+import com.lyft.lyftbutton.RideParams;
+import com.lyft.lyftbutton.RideTypeEnum;
+import com.uber.sdk.android.core.UberSdk;
+import com.uber.sdk.android.rides.RideParameters;
+import com.uber.sdk.core.auth.Scope;
+import com.uber.sdk.rides.client.SessionConfiguration;
+import com.uber.sdk.android.rides.RideRequestButton;
+
+import com.lyft.networking.ApiConfig;
 
 /**
  *  TODO: add check for network. If network is not available, app force-closes.
@@ -124,6 +136,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Place> placeList, restaurantList, barList, clubList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
+
+    // Uber API
+    protected SessionConfiguration config;
+    protected RideRequestButton uberButton;
+    private static final String uberClientID = "<SeDlS4TyXYKVQlMmEQvBdiC8bykH_3-9>";
+    private static final String uberServerToken = "<txir3duN1TJdoThXLzBL8iwXrdDzUFl2CHOSmP9q>";
+
+    // Lyft API
+    protected ApiConfig apiConfig;
+    protected LyftButton lyftButton;
+    private static final String lyftClientID = "lhM8Fvwahwa2";
+    private static final String lyftServerToken = "d7J9ktIjeoBnggvvnGacqXPZ8lmHykTqhPUZ7fmiGg18PSE483787KGYGpVeh5SckZWiYLZcdb4xnfzIqKSSLLnMSn3H/bHLSAdWSvW72Dr6deJ0dkVIHeE=";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -666,7 +692,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     /**
      * initializes all variables and methods
      */
@@ -772,7 +797,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         showLoadingScreen();
 
+        // Uber
+        initializeUberSDK();
+        initializeUberButton();
+        setUberOnClickListener();
+
+        // Lyft
+        initializeLyftSDK();
+        initializeLyftButton();
+        setLyftOnClickListener();
     }
+
 
     /*
     private void movePlacesToVenueList(List<Place> placesList) {
@@ -819,11 +854,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
 
+        setUberButtonParameters(sp);  // Sets Uber Parameters
+        setLyftButtonParameters(sp);  // Sets Lyft Parameters
+
         //================= Selected Place Listeners =========================================================
         setPhoneOnClickListeners(sp);
         setURLLayoutOnClickListener(sp);
-        setUberOnClickListener(sp);
-        setLyftOnClickListener(sp);
         setFavoritesOnClickListener(sp);
     }
 
@@ -871,28 +907,89 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    /**
-     * TODO: add functionality
-     * @param place - user-selected place
+    /***********************************************************************************************************
+     * *********************************************************************************************************
+     *                          Uber Start
      */
-    private void setUberOnClickListener(Place place) {
+
+
+    private void initializeUberSDK() {
+        config = new SessionConfiguration.Builder()
+                // mandatory
+                .setClientId(uberClientID)
+                // required for enhanced button features
+                .setServerToken(uberServerToken)
+                // required for implicit grant authentication
+                .setRedirectUri("<https://www.google.com>")
+                // required scope for Ride Request Widget features
+                .setScopes(Arrays.asList(Scope.RIDE_WIDGETS))
+                // optional: set sandbox as operating environment
+                .setEnvironment(SessionConfiguration.Environment.SANDBOX)
+                .build();
+
+        UberSdk.initialize(config);
+    }
+
+    private void initializeUberButton() {
+        uberButton = findViewById(R.id.uberButton);
+    }
+
+    private void setUberButtonParameters(Place place) {
+
+        RideParameters rideParams = new RideParameters.Builder()
+                // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
+                .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
+                // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
+                .setPickupLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), "You", "123 temp rd, dacula, ga 30019")
+                // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location.
+                .setDropoffLocation(place.getLatitude(), place.getLongitude(), place.getName(), place.getAddress())
+                .build();
+        // set parameters for the RideRequestButton instance
+        uberButton.setRideParameters(rideParams);
+    }
+
+    private void setUberOnClickListener() {
         spUberLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                uberButton.performClick();
             }
         });
     }
 
-    /**
-     * TODO: add functionality
-     * @param place - user-selected place
+
+    /***********************************************************************************************************
+     * *********************************************************************************************************
+     *                          Lyft Start
      */
-    private void setLyftOnClickListener(Place place) {
+
+    private void initializeLyftSDK() {
+        apiConfig = new ApiConfig.Builder()
+                .setClientId(lyftClientID)
+                .setClientToken(lyftServerToken)
+                .build();
+    }
+
+    private void initializeLyftButton() {
+        lyftButton = findViewById(R.id.lyftButton);
+        lyftButton.setApiConfig(apiConfig);
+    }
+
+    private void setLyftButtonParameters(Place place) {
+        RideParams.Builder rideParamsBuilder = new RideParams.Builder()
+                .setPickupLocation(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude())
+                .setDropoffLocation(place.getLatitude(), place.getLongitude());
+        rideParamsBuilder.setRideTypeEnum(RideTypeEnum.CLASSIC);
+
+        lyftButton.setRideParams(rideParamsBuilder.build());
+        lyftButton.load();
+    }
+
+    private void setLyftOnClickListener() {
         spLyftLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                lyftButton.callOnClick();
             }
         });
     }
@@ -1394,7 +1491,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     /**
      * Darkens the map
      *
@@ -1409,6 +1505,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapLayout.getForeground().setAlpha(value);
         }
     }
-
 
 }
