@@ -62,8 +62,8 @@ import com.uber.sdk.android.rides.RideRequestButton;
 import com.lyft.networking.ApiConfig;
 
 /**
+ *  TODO: populate Favorites Tab with favorited places
  *  TODO: add check for network. If network is not available, app force-closes.
- *  TODO: a location can be listed multiple times if it is more than one 'type'.
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add method to check if location services is turned on
  */
@@ -103,8 +103,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
 
-    // Venue listItem
-    //private List<Venue> venueList;
+    // favoritePlace listItem
+    private List<FavoritePlace> favoritePlaceList;
 
     // BottomSheet Behavior
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
@@ -571,12 +571,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-    /**********************************************************************************************************************************************************
-     **********************************************************************************************************************************************************
-     *                                     LOADING SCREEN
-     */
-
+    //region LOADING SCREEN
     private void showLoadingScreen() {
         setLoadingScreenVisibility();
     }
@@ -601,6 +596,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         checkBars.setVisibility(View.GONE);
         checkClubs.setVisibility(View.GONE);
     }
+
 
     /**
      * Sets restaurants check mark to VISIBLE
@@ -669,9 +665,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         loadingScreenLayout.setAnimation(slide_up);
     }
-
-
-
+    //endregion
 
     /**
      * Adds style JSON to map
@@ -705,6 +699,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restaurantList = new ArrayList<>();
         barList = new ArrayList<>();
         clubList = new ArrayList<>();
+        favoritePlaceList = new ArrayList<>();
 
         restaurantListReady = false;
         barListReady = false;
@@ -812,7 +807,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*
     private void movePlacesToVenueList(List<Place> placesList) {
         venueList.clear();
-        
+
         for (int i = 0; i < placesList.size(); i++) {
             String name = placesList.get(i).getName();
             String type = placesList.get(i).getSingleType();
@@ -853,6 +848,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spClosingTimeTV.setText(getClosingTimeString(sp));
         spPhoneNumTV.setText(sp.getPhone());
         spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
+
+        if (sp.isFavorited()) {
+            spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
+        } else {
+            spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteUnselectedBackground));
+        }
 
         setUberButtonParameters(sp);  // Sets Uber Parameters
         setLyftButtonParameters(sp);  // Sets Lyft Parameters
@@ -907,12 +908,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    /***********************************************************************************************************
-     * *********************************************************************************************************
-     *                          Uber Start
-     */
-
-
+    //region ***UBER FEATURE***
     private void initializeUberSDK() {
         config = new SessionConfiguration.Builder()
                 // mandatory
@@ -956,12 +952,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    //endregion
 
-
-    /***********************************************************************************************************
-     * *********************************************************************************************************
-     *                          Lyft Start
-     */
+    //region ***LYFT FEATURE***
 
     private void initializeLyftSDK() {
         apiConfig = new ApiConfig.Builder()
@@ -993,16 +986,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    //endregion
 
     /**
-     * TODO: add functionality
      * @param place - user-selected place
      */
-    private void setFavoritesOnClickListener(Place place) {
+    private void setFavoritesOnClickListener(final Place place) {
         spFavoritesLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
+                if (place.isFavorited()) {
+                    view.setBackgroundColor(getResources().getColor(R.color.favoriteUnselectedBackground));
+                    place.setFavorited(false);
+                    FavoritePlace.deleteAll(FavoritePlace.class,
+                            "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
+                            place.getLatitude()+"", place.getLongitude()+"");
+
+                } else {
+                    view.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
+                    place.setFavorited(true);
+                    FavoritePlace favoritePlace = new FavoritePlace(place);
+                    favoritePlace.save();
+                }
+//
+//                // check if this place has already been favorited
+//                List<FavoritePlace> favoritePlace = FavoritePlace.find(FavoritePlace.class,
+//                        "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
+//                        place.getLatitude()+"", place.getLongitude()+"");
+//
+//                // if place has not been favorited, save to the DB
+//                if (favoritePlace.size() == 0 || favoritePlace == null) {
+//                    favoritePlace.add(new FavoritePlace(place));
+//
+//                    favoritePlace.get(0).save();
+//                }
+//                // if place has been favorited, delete it from the DB
+//                else {
+//
+//                }
             }
         });
     }
@@ -1220,8 +1241,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
-
 
     /**
      * BottomSheet Listener

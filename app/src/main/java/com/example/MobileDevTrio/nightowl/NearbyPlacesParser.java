@@ -78,12 +78,9 @@ public class NearbyPlacesParser extends Parser {
         if (jsonPlace.has(RATING))
             place.setRating(jsonPlace.getDouble(RATING));
 
-        /*JSONArray typesArray = jsonPlace.getJSONArray(TYPES);
-        String[] types = new String[typesArray.length()];
-        for (int i = 0; i < typesArray.length(); i++) {
-            types[i] = typesArray.getString(i);
+        if (isFavorite(place)) {
+            place.setFavorited(true);
         }
-        place.setTypes(types); */
 
         switch(placeType) {
             case RESTAURANT: place.setSingleType("restaurant");
@@ -129,6 +126,15 @@ public class NearbyPlacesParser extends Parser {
         }
 
         return stringBuilder.toString();
+    }
+
+    //check if the place has been favorited and saved in the sqlite db
+    private boolean isFavorite(Place place) {
+        List<FavoritePlace> favoritePlace = FavoritePlace.find(FavoritePlace.class,
+                        "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
+                        place.getLatitude()+"", place.getLongitude()+"");
+
+        return favoritePlace.size() != 0;
     }
 
     public void parsePlace(Place place) {

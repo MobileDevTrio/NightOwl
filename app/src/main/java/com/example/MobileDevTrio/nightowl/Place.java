@@ -14,6 +14,7 @@ public class Place {
 
     private String type;
     private String simplifiedType;
+    private boolean isFavorited;
 
     // Must make a 2nd url request using placeId to get these specific data
     private String phone;
@@ -106,6 +107,14 @@ public class Place {
 
     public void setSimplifiedType(String simplifiedType) {
         this.simplifiedType = simplifiedType;
+    }
+
+    public boolean isFavorited() {
+        return isFavorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        isFavorited = favorited;
     }
 
     public void setTypes(String[] types) {
