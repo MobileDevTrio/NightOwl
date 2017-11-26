@@ -1045,6 +1045,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return closingTimeString;
     }
 
+    //region ***RATING STARS***
     private void setSelectedPlaceRatingStars(String rating) {
         int part1 = 0, part2 = 0;
         if(!rating.isEmpty()) {
@@ -1158,6 +1159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spStarEmpty4.setVisibility(View.INVISIBLE);
         spStarEmpty5.setVisibility(View.INVISIBLE);
     }
+    //endregion
 
     /**
      * @param URL - full url
@@ -1219,6 +1221,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 allowBottomSheet1Dragging = true;
                 bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
+
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(mLastKnownLocation.getLatitude() - LATITUDE_OFFSET,
+                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM);
+                mMap.animateCamera(cameraUpdate);
             }
         });
     }
