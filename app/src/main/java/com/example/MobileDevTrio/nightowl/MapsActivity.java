@@ -543,12 +543,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Collections.sort(newPlaces, new Comparator<Place>() {
                 @Override
                 public int compare(Place place, Place t1) {
-                    return Double.compare(place.getRating(), t1.getRating());
+                    return Double.compare(t1.getRating(), place.getRating());
                 }
             });
         }
-        for(int i =0; i < topRatedList.size(); i++){
-            topRatedList.set(i, newPlaces.get(i));
+        for(int i =0; i < topRatedCount; i++){
+            topRatedList.add(newPlaces.get(i));
         }
     }
 
