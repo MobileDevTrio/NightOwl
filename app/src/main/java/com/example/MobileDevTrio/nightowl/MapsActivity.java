@@ -531,7 +531,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void setTopRatedList(List<Place> places) {
-        List<Place> newPlaces = placeList;
+        List<Place> newPlaces = new ArrayList<>();
+        for(Place p : placeList){
+            newPlaces.add(p);
+        }
         if(places != null) {
             Collections.sort(newPlaces, new Comparator<Place>() {
                 @Override
