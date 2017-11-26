@@ -45,6 +45,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
@@ -134,8 +136,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             spStarFull1, spStarFull2, spStarFull3, spStarFull4, spStarFull5,
             spStarHalf1, spStarHalf2, spStarHalf3, spStarHalf4, spStarHalf5;
 
+    //Top Rated List capacity
+    private static final int topRatedCount = 10;
 
-    private List<Place> placeList, restaurantList, barList, clubList;
+    private List<Place> placeList, restaurantList, barList, clubList, topRatedList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
 
@@ -521,10 +525,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         barMarkers = new ArrayList<>();
         clubMarkers = new ArrayList<>();
 
+        //Initialize the top rated places list
+        topRatedList = new ArrayList<>(topRatedCount);
+
         sortPlaceMarkersIntoList(restaurantList);
         sortPlaceMarkersIntoList(barList);
         sortPlaceMarkersIntoList(clubList);
 
+
+        setTopRatedList(topRatedList);
+
+    }
+
+    private void setTopRatedList(List<Place> places) {
+        List<Place> newPlaces = placeList;
+        if(places != null) {
+            Collections.sort(newPlaces, new Comparator<Place>() {
+                @Override
+                public int compare(Place place, Place t1) {
+                    return Double.compare(place.getRating(), t1.getRating());
+                }
+            });
+        }
+        for(int i =0; i < topRatedList.size(); i++){
+            topRatedList.add(newPlaces.get(i));
+        }
     }
 
     /**
