@@ -142,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Place> placeList, restaurantList, barList, clubList, topRatedList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
+    boolean filterRestaurantSelected, filterBarsSelected, filterClubsSelected;
 
     // Uber API
     protected SessionConfiguration config;
@@ -724,6 +725,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         restaurantListReady = false;
         barListReady = false;
         clubListReady = false;
+
+        filterRestaurantSelected = false;
+        filterBarsSelected = false;
+        filterClubsSelected = false;
 
         // Loading Screen
         loadingScreenLayout = findViewById(R.id.loadingScreenLayout);
@@ -1353,8 +1358,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterRestaurantsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("NightOwl", "filter_button RESTAURANT clicked");
-
+                filterRestaurantSelected = true;
                 mMap.clear();
                 showNearbyPlaces(restaurantMarkers);
                 createRecyclerList(restaurantList);
@@ -1369,8 +1373,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterBarBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Log.d("NightOwl", "filter_button BAR clicked");
-
+                filterBarsSelected = true;
                 mMap.clear();
                 showNearbyPlaces(barMarkers);
                 createRecyclerList(barList);
@@ -1385,8 +1388,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         filterClubBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Log.d("NightOwl", "filter_button CLUB clicked");
-
+                filterClubsSelected = true;
                 mMap.clear();
                 showNearbyPlaces(clubMarkers);
                 createRecyclerList(clubList);
@@ -1406,10 +1408,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showNearbyPlaces(barMarkers);
                 showNearbyPlaces(clubMarkers);
                 createRecyclerList(placeList);
+
+                filterRestaurantSelected = false;
+                filterBarsSelected = false;
+                filterClubsSelected = false;
             }
         });
     }
 
+    /**
+     *
+     */
     private void tabNearYouListener() {
         tabNearYouLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1427,6 +1436,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
                 tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                if(filterRestaurantSelected) {
+                    createRecyclerList(restaurantList);
+                } else if (filterBarsSelected) {
+                    createRecyclerList(barList);
+                } else if(filterClubsSelected) {
+                    createRecyclerList(clubList);
+                } else {
+                    createRecyclerList(placeList);
+                }
             }
         });
     }
@@ -1448,6 +1467,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
                 tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                //createRecyclerList(favoritesList);
             }
         });
     }
@@ -1469,6 +1490,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
                 tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
+
+                createRecyclerList(topRatedList);
             }
         });
     }
