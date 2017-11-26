@@ -33,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,7 +65,7 @@ import com.uber.sdk.android.rides.RideRequestButton;
 
 /**
  *  TODO: populate Favorites Tab with favorited places
- *  TODO: move the camera to map marker when place is selected in bottom sheet
+ *  TODO: Override OnMarkerClick to center the map above the bottom sheet
  *  TODO: add check for network. If network is not available, app force-closes.
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add method to check if location services is turned on
@@ -1198,7 +1199,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void cardViewClicked(Place selectedPlace) {
         setSelectedPlaceBottomSheetData(selectedPlace);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(selectedPlace.getLatitude()-0.005,
+                selectedPlace.getLongitude()), 15f);
 
+        mMap.animateCamera(cameraUpdate);
         bottomSheetBehavior1.setState(STATE_COLLAPSED); // collapses Place List BottomSheet
         allowBottomSheet1Dragging = false;
 
@@ -1319,9 +1323,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    /**
-     *
-     */
+    //region ***FILTER FEATURE***
     private void filterButtonListener() {
         filterImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1418,6 +1420,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    //endregion
 
     /**
      *
