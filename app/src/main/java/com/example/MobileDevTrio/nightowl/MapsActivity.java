@@ -50,6 +50,7 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
 
+import com.lyft.networking.ApiConfig;
 import com.lyft.lyftbutton.LyftButton;
 import com.lyft.lyftbutton.RideParams;
 import com.lyft.lyftbutton.RideTypeEnum;
@@ -58,8 +59,6 @@ import com.uber.sdk.android.rides.RideParameters;
 import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
 import com.uber.sdk.android.rides.RideRequestButton;
-
-import com.lyft.networking.ApiConfig;
 
 /**
  *  TODO: populate Favorites Tab with favorited places
@@ -72,6 +71,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private static final String TAG = MapsActivity.class.getSimpleName();
+
+    private static final long THREE_MINUTES = 3 * 60 * 1000;
 
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -120,7 +121,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected TextView  spNameTV, spRatingTV, spTypeTV, spAddressTV, spOpenClosedTV, spClosingTimeTV,
                         spPhoneNumTV, spURLTV;
 
-    protected boolean appWasPaused;
+    protected boolean appWasPaused, locationNeeded;
+    protected long onPauseTime;
 
     // Loading Screen
     protected RelativeLayout loadingScreenLayout;
@@ -167,7 +169,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // initializes all variables
         initialize();
-
     }
 
     /**
@@ -181,13 +182,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onResume() {
         super.onResume();
         if(appWasPaused) {
-            /*try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+            if(locationNeeded) {
+                getDeviceLocation();
+            }
 
-            } */
-
-            getDeviceLocation();
+            if(onPauseTime < (System.currentTimeMillis() - THREE_MINUTES)) {
+                getDeviceLocation();
+            }
         }
     }
 
@@ -195,8 +196,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onPause() {
         super.onPause();
         appWasPaused = true;
-        Toast.makeText(getApplicationContext(), "onPause()", Toast.LENGTH_LONG).show();
-
+        onPauseTime = System.currentTimeMillis();
     }
 
     /**
@@ -312,13 +312,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         new LatLng(mLastKnownLocation.getLatitude() - LATITUDE_OFFSET,
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
-                                /*******************************************************************
+                                /******************
                                  * GET PLACES HERE
                                  */
 
+                                locationNeeded = false;
                                 startGettingPlaces();
-
-
 
                             } else {
                                 Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
@@ -328,6 +327,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 alert.setPositiveButton("TURN ON", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+                                        locationNeeded = true;
+
                                         Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                         MapsActivity.this.startActivity(myIntent);
                                     }
