@@ -64,6 +64,7 @@ import com.uber.sdk.android.rides.RideRequestButton;
 
 /**
  *  TODO: populate Favorites Tab with favorited places
+ *  TODO: move the camera to map marker when place is selected in bottom sheet
  *  TODO: add check for network. If network is not available, app force-closes.
  *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
  *  TODO: add method to check if location services is turned on
@@ -94,7 +95,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Default location (KSU Marietta campus) and default zoom to use when location permission
     // is not granted
-    // TODO: Allow/Prompt user to set the default location
     private LatLng mDefaultLocation = new LatLng(33.9397, -84.5197);
     private boolean mLocationPermissionGranted;
 
@@ -154,8 +154,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected LyftButton lyftButton;
     private static final String lyftClientID = "lhM8Fvwahwa2";
     private static final String lyftServerToken = "d7J9ktIjeoBnggvvnGacqXPZ8lmHykTqhPUZ7fmiGg18PSE483787KGYGpVeh5SckZWiYLZcdb4xnfzIqKSSLLnMSn3H/bHLSAdWSvW72Dr6deJ0dkVIHeE=";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -355,10 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**********************************************************************************************************************************************************
-     **********************************************************************************************************************************************************
-     *                                     GET NEARBY PLACES
-     */
+    //region ***GET NEARBY PLACES***
 
     private void startGettingPlaces() {
         showLoadingScreen();
@@ -516,9 +511,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     j--;
                 }
             }
-
         }
-
 
         // Initialize the place markers list
         restaurantMarkers = new ArrayList<>();
@@ -531,7 +524,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sortPlaceMarkersIntoList(restaurantList);
         sortPlaceMarkersIntoList(barList);
         sortPlaceMarkersIntoList(clubList);
-
 
         setTopRatedList(topRatedList);
 
@@ -597,7 +589,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    //region LOADING SCREEN
+    //endregion
+
+    //region ***LOADING SCREEN***
     private void showLoadingScreen() {
         setLoadingScreenVisibility();
     }
@@ -829,37 +823,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setLyftOnClickListener();
     }
 
-
-    /*
-    private void movePlacesToVenueList(List<Place> placesList) {
-        venueList.clear();
-
-        for (int i = 0; i < placesList.size(); i++) {
-            String name = placesList.get(i).getName();
-            String type = placesList.get(i).getSingleType();
-
-            Venue venue = new Venue(name, 5, type, "124 dacula rd.", "description, description", 5.0, 7.0);
-            venueList.add(venue);
-        }
-    } */
-
-//    protected void onPostExecute() {
-//        placeList = getNearbyPlaces.getNearbyPlacesList();
-//        // movePlacesToVenueList(getNearbyPlaces.getNearbyPlacesList());
-//        createRecyclerList();
-//    }
-
-    /*
-     * adds data to venueList
-
-    private void initializeListData() {
-        for (int i = 0; i < 5; i++) {
-            Venue v = new Venue("Hangovers", 5, "Bar", "123 Piedmont Dr.", "Very nice place.", 3, 7);
-
-            venueList.add(v);
-        }
-    } */
-
     /**
      * loads selected place data onto selectedPlaceBottomSheet
      * @param sp user-selected place
@@ -1034,22 +997,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     FavoritePlace favoritePlace = new FavoritePlace(place);
                     favoritePlace.save();
                 }
-//
-//                // check if this place has already been favorited
-//                List<FavoritePlace> favoritePlace = FavoritePlace.find(FavoritePlace.class,
-//                        "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
-//                        place.getLatitude()+"", place.getLongitude()+"");
-//
-//                // if place has not been favorited, save to the DB
-//                if (favoritePlace.size() == 0 || favoritePlace == null) {
-//                    favoritePlace.add(new FavoritePlace(place));
-//
-//                    favoritePlace.get(0).save();
-//                }
-//                // if place has been favorited, delete it from the DB
-//                else {
-//
-//                }
             }
         });
     }
@@ -1081,8 +1028,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     closingTimeString = "Close " + part1 + ":" + part2 + " " + part3;
                 }
-
-
             }
         }
 
@@ -1113,7 +1058,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (part1 == 5) {
             spStarFull5.setVisibility(View.VISIBLE);
         }
-
 
         // Set Initial Empty/Half/Full Stars
         if(part1 == 0) {
@@ -1182,7 +1126,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(part1 == 0) {
             spStarEmpty2.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void resetRatingStarVisibility() {
@@ -1204,7 +1147,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spStarEmpty4.setVisibility(View.INVISIBLE);
         spStarEmpty5.setVisibility(View.INVISIBLE);
     }
-
 
     /**
      * @param URL - full url
@@ -1241,7 +1183,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         MyAdapter adapter = new MyAdapter(placeList, this);
         rv.setAdapter(adapter);
-
     }
 
     /**
@@ -1334,8 +1275,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-
     /**
      * BottomSheet Listener 2 - SELECTED PLACE BOTTOM SHEET
      */
@@ -1371,7 +1310,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     /**
      *
@@ -1534,7 +1472,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
 
     /**
      * Darkens the map
