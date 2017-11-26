@@ -548,7 +548,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
         for(int i =0; i < topRatedList.size(); i++){
-            topRatedList.add(newPlaces.get(i));
+            topRatedList.set(i, newPlaces.get(i));
         }
     }
 
