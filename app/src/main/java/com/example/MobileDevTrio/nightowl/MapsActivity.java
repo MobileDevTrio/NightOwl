@@ -240,6 +240,144 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                }
+            }
+        }
+        updateLocationUI();
+    }
+
+    /**
+     * initializes all variables and methods
+     */
+    private void initialize() {
+
+        // Variables
+        mapLayout = findViewById(R.id.mapLayout);
+
+        //venueList = new ArrayList<>();
+        placeList = new ArrayList<>();
+        restaurantList = new ArrayList<>();
+        barList = new ArrayList<>();
+        clubList = new ArrayList<>();
+        favoritePlaceList = new ArrayList<>();
+
+        restaurantListReady = false;
+        barListReady = false;
+        clubListReady = false;
+
+        filterRestaurantSelected = false;
+        filterBarsSelected = false;
+        filterClubsSelected = false;
+
+        // Loading Screen
+        loadingScreenLayout = findViewById(R.id.loadingScreenLayout);
+        pbRestaurants = findViewById(R.id.loadingRestaurantsProgressBar);
+        pbBars = findViewById(R.id.loadingBarsProgressBar);
+        pbClubs = findViewById(R.id.loadingClubsProgressBar);
+        checkRestaurants = findViewById(R.id.check_restaurants);
+        checkBars = findViewById(R.id.check_bars);
+        checkClubs = findViewById(R.id.check_clubs);
+
+
+        bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
+        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
+        allowBottomSheet1Dragging = true;
+
+        tabNearYouLayout = findViewById(R.id.tabNearYou);
+        tabFavoritesLayout = findViewById(R.id.tabFavorites);
+        tabTopLayout = findViewById(R.id.tabTop);
+
+        tabNearYouSec = findViewById(R.id.tabNearYouSecondary);
+        tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
+        tabTopSec = findViewById(R.id.tabTopSecondary);
+
+        filterImageBtn = findViewById(R.id.filterImage);
+        filterRestaurantsBtn = findViewById(R.id.filterRestaurants);
+        filterClubBtn = findViewById(R.id.filterClub);
+        filterBarBtn = findViewById(R.id.filterBars);
+        clearFilterBtn = findViewById(R.id.clearFilterBtn);
+        filterBtnIsPressed = false;
+
+        goBackBtn = findViewById(R.id.goBackImage);
+        spNameTV = findViewById(R.id.spName);
+        spRatingTV = findViewById(R.id.spRating);
+        spTypeTV = findViewById(R.id.spType);
+        spUberLayout = findViewById(R.id.uberLayout);
+        spLyftLayout = findViewById(R.id.lyftLayout);
+        spFavoritesLayout = findViewById(R.id.favoritesLayout);
+        spAddressTV = findViewById(R.id.spAddress);
+        spOpenClosedTV = findViewById(R.id.spOpenClosed);
+        spClosingTimeTV = findViewById(R.id.spClosingTime);
+        spPhoneNumTV = findViewById(R.id.spPhoneNumber);
+        spURLTV = findViewById(R.id.spURL);
+        phoneIcon1 = findViewById(R.id.selectedPlacePhoneIcon1);
+        phoneLayout2 = findViewById(R.id.spPhoneLayout);
+        spURLlayout = findViewById(R.id.spURLLayout);
+
+        // Rating Stars
+        spStarFull1 = findViewById(R.id.spRatingStarFull1);
+        spStarFull2 = findViewById(R.id.spRatingStarFull2);
+        spStarFull3 = findViewById(R.id.spRatingStarFull3);
+        spStarFull4 = findViewById(R.id.spRatingStarFull4);
+        spStarFull5 = findViewById(R.id.spRatingStarFull5);
+
+        spStarHalf1 = findViewById(R.id.spRatingStarHalf1);
+        spStarHalf2 = findViewById(R.id.spRatingStarHalf2);
+        spStarHalf3 = findViewById(R.id.spRatingStarHalf3);
+        spStarHalf4 = findViewById(R.id.spRatingStarHalf4);
+        spStarHalf5 = findViewById(R.id.spRatingStarHalf5);
+
+        spStarEmpty1 = findViewById(R.id.spRatingStarEmpty1);
+        spStarEmpty2 = findViewById(R.id.spRatingStarEmpty2);
+        spStarEmpty3 = findViewById(R.id.spRatingStarEmpty3);
+        spStarEmpty4 = findViewById(R.id.spRatingStarEmpty4);
+        spStarEmpty5 = findViewById(R.id.spRatingStarEmpty5);
+
+        appWasPaused = false;
+
+
+        // Methods & Listeners
+        tabNearYouListener();
+        tabFavoritesListener();
+        tabTopListener();
+        bottomSheetListener();
+        bottomSheetListener2();
+        filterButtonListener();
+        filterRestaurantsBtnListener();
+        filterBarBtnListener();
+        filterClubBtnListener();
+        clearFilterBtnListener();
+        goBackBtnListener();
+
+        //initializeListData();
+        //createRecyclerList();
+
+        darkenMap(0);
+
+        showLoadingScreen();
+
+        // Uber
+        initializeUberSDK();
+        initializeUberButton();
+        setUberOnClickListener();
+
+        // Lyft
+        initializeLyftSDK();
+        initializeLyftButton();
+        setLyftOnClickListener();
+    }
+
     private void getLocationPermission() {
     /*
      * Request location permission, so that we can get the location of the
@@ -257,22 +395,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-        updateLocationUI();
-    }
 
     private void updateLocationUI() {
         if (mMap == null) {
@@ -711,126 +833,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * initializes all variables and methods
-     */
-    private void initialize() {
-
-        // Variables
-        mapLayout = findViewById(R.id.mapLayout);
-
-        //venueList = new ArrayList<>();
-        placeList = new ArrayList<>();
-        restaurantList = new ArrayList<>();
-        barList = new ArrayList<>();
-        clubList = new ArrayList<>();
-        favoritePlaceList = new ArrayList<>();
-
-        restaurantListReady = false;
-        barListReady = false;
-        clubListReady = false;
-
-        filterRestaurantSelected = false;
-        filterBarsSelected = false;
-        filterClubsSelected = false;
-
-        // Loading Screen
-        loadingScreenLayout = findViewById(R.id.loadingScreenLayout);
-        pbRestaurants = findViewById(R.id.loadingRestaurantsProgressBar);
-        pbBars = findViewById(R.id.loadingBarsProgressBar);
-        pbClubs = findViewById(R.id.loadingClubsProgressBar);
-        checkRestaurants = findViewById(R.id.check_restaurants);
-        checkBars = findViewById(R.id.check_bars);
-        checkClubs = findViewById(R.id.check_clubs);
-
-
-        bottomSheetBehavior1 = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
-        bottomSheetBehavior2 = BottomSheetBehavior.from(findViewById(R.id.selectedPlaceBottomSheetLayout));
-        allowBottomSheet1Dragging = true;
-
-        tabNearYouLayout = findViewById(R.id.tabNearYou);
-        tabFavoritesLayout = findViewById(R.id.tabFavorites);
-        tabTopLayout = findViewById(R.id.tabTop);
-
-        tabNearYouSec = findViewById(R.id.tabNearYouSecondary);
-        tabFavoritesSec = findViewById(R.id.tabFavoritesSecondary);
-        tabTopSec = findViewById(R.id.tabTopSecondary);
-
-        filterImageBtn = findViewById(R.id.filterImage);
-        filterRestaurantsBtn = findViewById(R.id.filterRestaurants);
-        filterClubBtn = findViewById(R.id.filterClub);
-        filterBarBtn = findViewById(R.id.filterBars);
-        clearFilterBtn = findViewById(R.id.clearFilterBtn);
-        filterBtnIsPressed = false;
-
-        goBackBtn = findViewById(R.id.goBackImage);
-        spNameTV = findViewById(R.id.spName);
-        spRatingTV = findViewById(R.id.spRating);
-        spTypeTV = findViewById(R.id.spType);
-        spUberLayout = findViewById(R.id.uberLayout);
-        spLyftLayout = findViewById(R.id.lyftLayout);
-        spFavoritesLayout = findViewById(R.id.favoritesLayout);
-        spAddressTV = findViewById(R.id.spAddress);
-        spOpenClosedTV = findViewById(R.id.spOpenClosed);
-        spClosingTimeTV = findViewById(R.id.spClosingTime);
-        spPhoneNumTV = findViewById(R.id.spPhoneNumber);
-        spURLTV = findViewById(R.id.spURL);
-        phoneIcon1 = findViewById(R.id.selectedPlacePhoneIcon1);
-        phoneLayout2 = findViewById(R.id.spPhoneLayout);
-        spURLlayout = findViewById(R.id.spURLLayout);
-
-        // Rating Stars
-        spStarFull1 = findViewById(R.id.spRatingStarFull1);
-        spStarFull2 = findViewById(R.id.spRatingStarFull2);
-        spStarFull3 = findViewById(R.id.spRatingStarFull3);
-        spStarFull4 = findViewById(R.id.spRatingStarFull4);
-        spStarFull5 = findViewById(R.id.spRatingStarFull5);
-
-        spStarHalf1 = findViewById(R.id.spRatingStarHalf1);
-        spStarHalf2 = findViewById(R.id.spRatingStarHalf2);
-        spStarHalf3 = findViewById(R.id.spRatingStarHalf3);
-        spStarHalf4 = findViewById(R.id.spRatingStarHalf4);
-        spStarHalf5 = findViewById(R.id.spRatingStarHalf5);
-
-        spStarEmpty1 = findViewById(R.id.spRatingStarEmpty1);
-        spStarEmpty2 = findViewById(R.id.spRatingStarEmpty2);
-        spStarEmpty3 = findViewById(R.id.spRatingStarEmpty3);
-        spStarEmpty4 = findViewById(R.id.spRatingStarEmpty4);
-        spStarEmpty5 = findViewById(R.id.spRatingStarEmpty5);
-
-        appWasPaused = false;
-
-
-        // Methods & Listeners
-        tabNearYouListener();
-        tabFavoritesListener();
-        tabTopListener();
-        bottomSheetListener();
-        bottomSheetListener2();
-        filterButtonListener();
-        filterRestaurantsBtnListener();
-        filterBarBtnListener();
-        filterClubBtnListener();
-        clearFilterBtnListener();
-        goBackBtnListener();
-
-        //initializeListData();
-        //createRecyclerList();
-
-        darkenMap(0);
-
-        showLoadingScreen();
-
-        // Uber
-        initializeUberSDK();
-        initializeUberButton();
-        setUberOnClickListener();
-
-        // Lyft
-        initializeLyftSDK();
-        initializeLyftButton();
-        setLyftOnClickListener();
-    }
 
     /**
      * loads selected place data onto selectedPlaceBottomSheet
@@ -1043,6 +1045,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return closingTimeString;
     }
 
+    //region ***RATING STARS***
     private void setSelectedPlaceRatingStars(String rating) {
         int part1 = 0, part2 = 0;
         if(!rating.isEmpty()) {
@@ -1156,6 +1159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spStarEmpty4.setVisibility(View.INVISIBLE);
         spStarEmpty5.setVisibility(View.INVISIBLE);
     }
+    //endregion
 
     /**
      * @param URL - full url
@@ -1217,6 +1221,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 allowBottomSheet1Dragging = true;
                 bottomSheetBehavior1.setState(STATE_EXPANDED); // expands Place List BottomSheet
+
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(mLastKnownLocation.getLatitude() - LATITUDE_OFFSET,
+                                mLastKnownLocation.getLongitude()), DEFAULT_ZOOM);
+                mMap.animateCamera(cameraUpdate);
             }
         });
     }
