@@ -527,7 +527,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sortPlaceMarkersIntoList(barList);
         sortPlaceMarkersIntoList(clubList);
 
-        setTopRatedList(topRatedList);
+
 
     }
 
@@ -1496,8 +1496,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 tabFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
                 tabFavoritesSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
-
-                createRecyclerList(topRatedList);
+                if(filterRestaurantSelected) {
+                    setTopRatedList(restaurantList);
+                    createRecyclerList(topRatedList);
+                } else if (filterBarsSelected) {
+                    setTopRatedList(barList);
+                    createRecyclerList(topRatedList);
+                } else if(filterClubsSelected) {
+                    setTopRatedList(clubList);
+                    createRecyclerList(topRatedList);;
+                } else {
+                    setTopRatedList(placeList);
+                    createRecyclerList(topRatedList);
+                }
             }
         });
     }
