@@ -64,11 +64,8 @@ import com.uber.sdk.rides.client.SessionConfiguration;
 import com.uber.sdk.android.rides.RideRequestButton;
 
 /**
- *  TODO: populate Favorites Tab with favorited places
  *  TODO: Override OnMarkerClick to center the map above the bottom sheet
  *  TODO: add check for network. If network is not available, app force-closes.
- *  TODO: add MarkerOptions.Listeners to bring up location details of marker touched
- *  TODO: add method to check if location services is turned on
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -688,14 +685,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 switch (googlePlace.getSingleType()) {
                     case "restaurant":
-                        restaurantMarkers.add(markerOptions);
+                        restaurantMarkers.add(markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.restaurant)));
                         break;
                     case "bar":
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bar_cocktail));
                         barMarkers.add(markerOptions);
                         break;
                     case "night_club":
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.club));
                         clubMarkers.add(markerOptions);
                         break;
                 }
