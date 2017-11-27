@@ -1,20 +1,17 @@
 package com.example.MobileDevTrio.nightowl;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.util.Arrays;
 
-public class Place {
+public class Place extends SugarRecord<Place> {
 
     private String placeId;   // Google ID of a place, get more details of a place w/ this id
     private String name;
-    private LatLng location;  // lat and lng coordinates of a place
     private double rating;
-    private String[] types;   // types of a place (ie. restaurant, bar, night_club)
-
-    private String type;
     private String simplifiedType;
-    private boolean isFavorited;
 
     // Must make a 2nd url request using placeId to get these specific data
     private String phone;
@@ -22,7 +19,18 @@ public class Place {
     private String address;
     private boolean open247;
     private String closingHours;
-    private String[] weeklyHours;
+    private double latitude;
+    private double longitude;
+
+    // Ignore attributes we don't want saved in the DB
+    @Ignore
+    private String type;
+
+//    @Ignore
+//    private LatLng location;  // lat and lng coordinates of a place
+
+    @Ignore
+    private boolean isFavorited;
 
     public Place() {
     }
@@ -30,9 +38,8 @@ public class Place {
     private Place(Builder builder) {
         setPlaceId(builder.placeId);
         setName(builder.name);
-        setLocation(builder.location);
+//        setLocation(builder.location);
         setRating(builder.rating);
-        //setTypes(builder.types);
         setSingleType(builder.type);
         setSimplifiedType(builder.simplifiedType);
         closingHours = "";
@@ -41,10 +48,10 @@ public class Place {
     @Override
     public String toString() {
         return "Place {" +
-                "location=" + location +
+//                "location=" + location +
                 ", name='" + name + '\'' +
                 ", placeId='" + placeId + '\'' +
-                ", types=" + Arrays.toString(types) +
+                ", type=" + type +
                 ", address='" + address + '\'' +
                 "}";
     }
@@ -66,19 +73,27 @@ public class Place {
     }
 
     public LatLng getLocation() {
-        return location;
+        return new LatLng(latitude, longitude);
     }
 
-    public void setLocation(LatLng location) {
-        this.location = location;
-    }
+//    public void setLocation(LatLng location) {
+//        this.location = location;
+//    }
 
     public double getLatitude(){
-        return location.latitude;
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public double getLongitude(){
-        return location.longitude;
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public double getRating() {
@@ -87,10 +102,6 @@ public class Place {
 
     public void setRating(double rating) {
         this.rating = rating;
-    }
-
-    public String[] getTypes() {
-        return types;
     }
 
     public String getSingleType() {
@@ -115,10 +126,6 @@ public class Place {
 
     public void setFavorited(boolean favorited) {
         isFavorited = favorited;
-    }
-
-    public void setTypes(String[] types) {
-        this.types = types;
     }
 
     public String getPhone() {
@@ -159,14 +166,6 @@ public class Place {
 
     public void setClosingHours(String closingHours) {
         this.closingHours = closingHours;
-    }
-
-    public String[] getWeeklyHours() {
-        return weeklyHours;
-    }
-
-    public void setWeeklyHours(String[] weeklyHours) {
-        this.weeklyHours = weeklyHours;
     }
 
     /**

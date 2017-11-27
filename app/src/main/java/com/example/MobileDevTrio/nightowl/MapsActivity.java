@@ -107,9 +107,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LinearLayout tabNearYouLayout, tabFavoritesLayout, tabTopLayout;
     private View tabNearYouSec, tabFavoritesSec, tabTopSec;
 
-    // favoritePlace listItem
-    private List<FavoritePlace> favoritePlaceList;
-
     // BottomSheet Behavior
     BottomSheetBehavior bottomSheetBehavior1, bottomSheetBehavior2;
     protected boolean allowBottomSheet1Dragging;
@@ -140,6 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Top Rated List capacity
     private static final int topRatedCount = 10;
 
+    private List<Place> favoritePlaceList;
     private List<Place> placeList, restaurantList, barList, clubList, topRatedList;
     private List<MarkerOptions> restaurantMarkers, barMarkers, clubMarkers;
     boolean restaurantListReady, barListReady, clubListReady;
@@ -395,7 +393,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -416,7 +413,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("Exception: %s", e.getMessage());
         }
     }
-
 
     private void getDeviceLocation() {
     /*
@@ -836,32 +832,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * loads selected place data onto selectedPlaceBottomSheet
-     * @param sp user-selected place
+     * @param selectedPlace user-selected place
      */
-    private void setSelectedPlaceBottomSheetData(Place sp) {
+    private void setSelectedPlaceBottomSheetData(Place selectedPlace) {
         resetRatingStarVisibility();
-        spNameTV.setText(sp.getName());
-        spRatingTV.setText(Double.toString(sp.getRating()));
-        setSelectedPlaceRatingStars(Double.toString(sp.getRating()));
-        spTypeTV.setText(sp.getSimplifiedType());
-        spAddressTV.setText(sp.getAddress());
-        spClosingTimeTV.setText(getClosingTimeString(sp));
-        spPhoneNumTV.setText(sp.getPhone());
-        spURLTV.setText(getSimplifiedPlaceWebsite(sp.getWebsite()));
+        spNameTV.setText(selectedPlace.getName());
+        spRatingTV.setText(Double.toString(selectedPlace.getRating()));
+        setSelectedPlaceRatingStars(Double.toString(selectedPlace.getRating()));
+        spTypeTV.setText(selectedPlace.getSimplifiedType());
+        spAddressTV.setText(selectedPlace.getAddress());
+        spClosingTimeTV.setText(getClosingTimeString(selectedPlace));
+        spPhoneNumTV.setText(selectedPlace.getPhone());
+        spURLTV.setText(getSimplifiedPlaceWebsite(selectedPlace.getWebsite()));
 
-        if (sp.isFavorited()) {
+        if (selectedPlace.isFavorited()) {
             spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
         } else {
             spFavoritesLayout.setBackgroundColor(getResources().getColor(R.color.favoriteUnselectedBackground));
         }
 
-        setUberButtonParameters(sp);  // Sets Uber Parameters
-        setLyftButtonParameters(sp);  // Sets Lyft Parameters
+        setUberButtonParameters(selectedPlace);  // Sets Uber Parameters
+        setLyftButtonParameters(selectedPlace);  // Sets Lyft Parameters
 
         //================= Selected Place Listeners =========================================================
-        setPhoneOnClickListeners(sp);
-        setURLLayoutOnClickListener(sp);
-        setFavoritesOnClickListener(sp);
+        setPhoneOnClickListeners(selectedPlace);
+        setURLLayoutOnClickListener(selectedPlace);
+        setFavoritesOnClickListener(selectedPlace);
     }
 
     /**
@@ -998,15 +994,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (place.isFavorited()) {
                     view.setBackgroundColor(getResources().getColor(R.color.favoriteUnselectedBackground));
                     place.setFavorited(false);
-                    FavoritePlace.deleteAll(FavoritePlace.class,
-                            "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
-                            place.getLatitude()+"", place.getLongitude()+"");
+                    Place.deleteAll(Place.class,
+                            "PLACE_ID = ?",
+                            place.getPlaceId());
 
                 } else {
                     view.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
                     place.setFavorited(true);
-                    FavoritePlace favoritePlace = new FavoritePlace(place);
-                    favoritePlace.save();
+                    place.save();
                 }
             }
         });
@@ -1483,7 +1478,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 tabTopLayout.setBackgroundColor(getResources().getColor(R.color.tabUnselected));
                 tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
 
-                //createRecyclerList(favoritesList);
+                favoritePlaceList = Place.listAll(Place.class);
+                createRecyclerList(favoritePlaceList);
             }
         });
     }

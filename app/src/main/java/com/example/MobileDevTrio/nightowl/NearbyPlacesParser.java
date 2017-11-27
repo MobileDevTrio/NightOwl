@@ -70,8 +70,10 @@ public class NearbyPlacesParser extends Parser {
         place.setPlaceId(jsonPlace.getString(PLACE_ID));
 
         JSONObject locationJson = jsonPlace.getJSONObject(GEOMETRY).getJSONObject(LOCATION);
-        LatLng location = new LatLng(locationJson.getDouble(LAT), locationJson.getDouble(LNG));
-        place.setLocation(location);
+//        LatLng location = new LatLng(locationJson.getDouble(LAT), locationJson.getDouble(LNG));
+//        place.setLocation(location);
+        place.setLatitude(locationJson.getDouble(LAT));
+        place.setLongitude(locationJson.getDouble(LNG));
 
         place.setName(jsonPlace.getString(NAME));
 
@@ -130,11 +132,11 @@ public class NearbyPlacesParser extends Parser {
 
     //check if the place has been favorited and saved in the sqlite db
     private boolean isFavorite(Place place) {
-        List<FavoritePlace> favoritePlace = FavoritePlace.find(FavoritePlace.class,
-                        "LOCATION_LATITUDE = ? and LOCATION_LONGITUDE = ?",
-                        place.getLatitude()+"", place.getLongitude()+"");
+        List<Place> placeList = Place.find(Place.class,
+                        "PLACE_ID = ?",
+                        place.getPlaceId());
 
-        return favoritePlace.size() != 0;
+        return placeList.size() != 0;
     }
 
     public void parsePlace(Place place) {
