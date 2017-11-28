@@ -41,6 +41,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -81,6 +82,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PROXIMITY_RADIUS = 1600 * 4;  // 4 mile radius
     private static final double LATITUDE_OFFSET = 0.05;
     private static final float DEFAULT_ZOOM = 11.8f;
+    private String currentTab = "Near you";
 
     // Entry points for Google Places API
     protected GeoDataClient mGeoDataClient;
@@ -353,9 +355,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         clearFilterBtnListener();
         goBackBtnListener();
 
-        //initializeListData();
-        //createRecyclerList();
-
         darkenMap(0);
 
         showLoadingScreen();
@@ -397,7 +396,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
                 mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
-                //mMap.getUiSettings().setZoomControlsEnabled(true);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -640,8 +638,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sortPlaceMarkersIntoList(barList);
         sortPlaceMarkersIntoList(clubList);
 
-
-
     }
 
     private void setTopRatedList(List<Place> places) {
@@ -824,7 +820,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     /**
      * loads selected place data onto selectedPlaceBottomSheet
      * @param selectedPlace user-selected place
@@ -849,7 +844,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setUberButtonParameters(selectedPlace);  // Sets Uber Parameters
         setLyftButtonParameters(selectedPlace);  // Sets Lyft Parameters
 
-        //================= Selected Place Listeners =========================================================
+        //================= Selected Place Listeners ===============================================
         setPhoneOnClickListeners(selectedPlace);
         setURLLayoutOnClickListener(selectedPlace);
         setFavoritesOnClickListener(selectedPlace);
@@ -992,6 +987,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Place.deleteAll(Place.class,
                             "PLACE_ID = ?",
                             place.getPlaceId());
+                    if (currentTab.contentEquals("Favorites")) {
+                        favoritePlaceList = Place.listAll(Place.class);
+                        for (Place place: favoritePlaceList) {
+                            place.setFavorited(true);
+                        }
+                        createRecyclerList(favoritePlaceList);
+                    }
 
                 } else {
                     view.setBackgroundColor(getResources().getColor(R.color.favoriteSelectedBackground));
@@ -1451,6 +1453,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     createRecyclerList(placeList);
                 }
+
+                currentTab = "Near You";
             }
         });
     }
@@ -1474,7 +1478,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 tabTopSec.setBackgroundColor(getResources().getColor(R.color.tabUnselectedSecondary));
 
                 favoritePlaceList = Place.listAll(Place.class);
+                for (Place place: favoritePlaceList) {
+                    place.setFavorited(true);
+                }
                 createRecyclerList(favoritePlaceList);
+                currentTab = "Favorites";
             }
         });
     }
@@ -1509,6 +1517,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     setTopRatedList(placeList);
                     createRecyclerList(topRatedList);
                 }
+
+                currentTab = "Top Nightlife";
             }
         });
     }
@@ -1527,5 +1537,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapLayout.getForeground().setAlpha(value);
         }
     }
-
 }
