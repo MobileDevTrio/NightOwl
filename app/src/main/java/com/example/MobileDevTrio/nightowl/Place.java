@@ -4,7 +4,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 
-import java.util.Arrays;
 
 public class Place extends SugarRecord<Place> {
 

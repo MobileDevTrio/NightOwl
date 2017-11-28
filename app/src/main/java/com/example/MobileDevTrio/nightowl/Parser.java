@@ -1,7 +1,6 @@
 package com.example.MobileDevTrio.nightowl;
 
 import android.util.Pair;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

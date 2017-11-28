@@ -52,7 +52,6 @@ import java.util.List;
 import static android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED;
 import static android.support.design.widget.BottomSheetBehavior.STATE_DRAGGING;
 import static android.support.design.widget.BottomSheetBehavior.STATE_EXPANDED;
-
 import com.lyft.networking.ApiConfig;
 import com.lyft.lyftbutton.LyftButton;
 import com.lyft.lyftbutton.RideParams;
@@ -64,8 +63,7 @@ import com.uber.sdk.rides.client.SessionConfiguration;
 import com.uber.sdk.android.rides.RideRequestButton;
 
 /**
- *  TODO: Override OnMarkerClick to center the map above the bottom sheet
- *  TODO: add check for network. If network is not available, app force-closes.
+ *
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -439,7 +437,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 startGettingPlaces();
 
                             } else {
-                                Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "Showing Alert", Toast.LENGTH_SHORT).show();
 
                                 AlertDialog.Builder alert = new AlertDialog.Builder(MapsActivity.this);
                                 alert.setMessage("Location needs to be turned on.");
@@ -1177,7 +1175,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void createRecyclerList(List<Place> placeList) {
         String a = "size: " + placeList.size() + "";
 
-        Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
+        //Toast.makeText(MapsActivity.this, a , Toast.LENGTH_LONG).show();
         Log.d("NightOwl:", " creating recyclerList");
 
         RecyclerView rv = findViewById(R.id.recyclerView);
